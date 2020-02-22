@@ -12,40 +12,38 @@ fn main() {
 fn solve(input: &str) -> String {
     let mut iterator = input.split_whitespace();
 
-    let a = iterator.next().unwrap().parse::<u8>().unwrap();
-    let b = iterator.next().unwrap().parse::<u8>().unwrap();
-    let c = iterator.next().unwrap().parse::<u8>().unwrap();
+    let n: usize = iterator.next().unwrap().parse().unwrap();
 
-    if a == b && a != c {
-        return String::from("Yes");
+    let mut x: Vec<usize> = Vec::with_capacity(n);
+    let mut total: usize = 0;
+    for _i in 0..n {
+        let xi: usize = iterator.next().unwrap().parse().unwrap();
+        x.push(xi);
+        total += xi;
     }
-    if a == c && a != b {
-        return String::from("Yes");
+
+    let average = ((total as f64) / (n as f64)).round() as usize;
+
+    let mut answer: usize = 0;
+    for i in 0..n {
+        answer += (x[i] as i64 - average as i64).pow(2) as usize;
     }
-    if b == c && b != a {
-        return String::from("Yes");
-    }
-    return String::from("No");
+
+    return format!("{}", answer);
 }
 
 #[test]
 fn test() {
     let cases: Vec<(&str, &str)> = vec![
         (
-            r"5 7 5",
-            "Yes"
+            r"2
+1 4",
+            "5"
         ),
         (
-            r"4 4 4",
-            "No"
-        ),
-        (
-            r"4 9 6",
-            "No"
-        ),
-        (
-            r"3 3 4",
-            "Yes"
+            r"7
+14 14 2 13 56 2 37",
+            "2354"
         ),
     ];
 

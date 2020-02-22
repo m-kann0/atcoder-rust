@@ -12,40 +12,32 @@ fn main() {
 fn solve(input: &str) -> String {
     let mut iterator = input.split_whitespace();
 
-    let a = iterator.next().unwrap().parse::<u8>().unwrap();
-    let b = iterator.next().unwrap().parse::<u8>().unwrap();
-    let c = iterator.next().unwrap().parse::<u8>().unwrap();
+    let mut n: usize = iterator.next().unwrap().parse().unwrap();
+    let k: usize = iterator.next().unwrap().parse().unwrap();
 
-    if a == b && a != c {
-        return String::from("Yes");
+    let mut count = 0;
+    while n > 0 {
+        n /= k;
+        count += 1;
     }
-    if a == c && a != b {
-        return String::from("Yes");
-    }
-    if b == c && b != a {
-        return String::from("Yes");
-    }
-    return String::from("No");
+
+    return format!("{}", count);
 }
 
 #[test]
 fn test() {
     let cases: Vec<(&str, &str)> = vec![
         (
-            r"5 7 5",
-            "Yes"
+            r"11 2",
+            "4"
         ),
         (
-            r"4 4 4",
-            "No"
+            r"1010101 10",
+            "7"
         ),
         (
-            r"4 9 6",
-            "No"
-        ),
-        (
-            r"3 3 4",
-            "Yes"
+            r"314159265 3",
+            "18"
         ),
     ];
 

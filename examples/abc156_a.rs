@@ -12,40 +12,26 @@ fn main() {
 fn solve(input: &str) -> String {
     let mut iterator = input.split_whitespace();
 
-    let a = iterator.next().unwrap().parse::<u8>().unwrap();
-    let b = iterator.next().unwrap().parse::<u8>().unwrap();
-    let c = iterator.next().unwrap().parse::<u8>().unwrap();
+    let n: usize = iterator.next().unwrap().parse().unwrap();
+    let r: usize = iterator.next().unwrap().parse().unwrap();
 
-    if a == b && a != c {
-        return String::from("Yes");
+    return if n >= 10 {
+        format!("{}", r)
+    } else {
+        format!("{}", r + (100 * (10 - n)))
     }
-    if a == c && a != b {
-        return String::from("Yes");
-    }
-    if b == c && b != a {
-        return String::from("Yes");
-    }
-    return String::from("No");
 }
 
 #[test]
 fn test() {
     let cases: Vec<(&str, &str)> = vec![
         (
-            r"5 7 5",
-            "Yes"
+            r"2 2919",
+            "3719"
         ),
         (
-            r"4 4 4",
-            "No"
-        ),
-        (
-            r"4 9 6",
-            "No"
-        ),
-        (
-            r"3 3 4",
-            "Yes"
+            r"22 3051",
+            "3051"
         ),
     ];
 
