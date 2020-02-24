@@ -16,40 +16,111 @@ fn solve(input: &str) -> String {
     let a: i64 = iterator.next().unwrap().parse().unwrap();
     let b: i64 = iterator.next().unwrap().parse().unwrap();
 
-    let mut ans: i64 = pow(2, n);
-    ans = (ans - 1) % MOD;
-    ans = (ans - comb(n, a)) % MOD;
-    ans = (ans - comb(n, b)) % MOD;
-    if ans < 0 {
-        ans += MOD;
-    }
+    let mut ans: ModInt = ModInt::new(2).pow(n);
+    ans -= ModInt::new(1);
+    ans -= ModInt::comb(ModInt::new(n), ModInt::new(a));
+    ans -= ModInt::comb(ModInt::new(n), ModInt::new(b));
 
     return format!("{}", ans);
 }
 
-const MOD: i64 = 1000000007;
+use std::ops::{Add, AddAssign, SubAssign, Sub, MulAssign, Mul};
+use std::fmt::{Display, Formatter, Error};
 
-fn pow(n: i64, x: i64) -> i64 {
-    if x == 0 {
-        return 1;
+const MOD: i64 = 1_000_000_007;
+
+#[derive(Copy, Clone)]
+struct ModInt {
+    value: i64
+}
+
+impl ModInt {
+    fn new(v: i64) -> ModInt {
+        ModInt { value: v }
     }
 
-    return if x % 2 == 0 {
-        let t = pow(n, x / 2);
-        t * t % MOD
-    } else {
-        n * pow(n, x - 1) % MOD
+    fn pow(self, x: i64) -> ModInt {
+        if x == 0 {
+            return ModInt { value: 1 };
+        }
+
+        return if x % 2 == 0 {
+            let t = ModInt::pow(self, x / 2);
+            t * t
+        } else {
+            self * ModInt::pow(self, x - 1)
+        }
+    }
+
+    fn comb(n: ModInt, k: ModInt) -> ModInt {
+        let mut numerator = ModInt { value: 1 };
+        let mut denominator = ModInt { value: 1 };
+        for i in 0..k.value {
+            numerator = numerator * (n - ModInt { value: i });
+            denominator = denominator * (k - ModInt { value: i });
+        }
+        numerator * denominator.pow(MOD - 2)
     }
 }
 
-fn comb(n: i64, k: i64) -> i64 {
-    let mut numerator: i64 = 1;
-    let mut denominator: i64 = 1;
-    for i in 0..k {
-        numerator = numerator * (n - i) % MOD;
-        denominator = denominator * (k - i) % MOD;
+impl Display for ModInt {
+    fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), Error> {
+        write!(f, "{}", self.value)
     }
-    numerator * pow(denominator, MOD - 2) % MOD
+}
+
+impl Add for ModInt {
+    type Output = ModInt;
+
+    fn add(self, rhs: Self) -> Self::Output {
+        let mut result = ModInt { value: self.value };
+        result += rhs;
+        result
+    }
+}
+
+impl Sub for ModInt {
+    type Output = ModInt;
+
+    fn sub(self, rhs: Self) -> Self::Output {
+        let mut result = ModInt { value: self.value };
+        result -= rhs;
+        result
+    }
+}
+
+impl Mul for ModInt {
+    type Output = ModInt;
+
+    fn mul(self, rhs: Self) -> Self::Output {
+        let mut result = ModInt { value: self.value };
+        result *= rhs;
+        result
+    }
+}
+
+impl AddAssign for ModInt {
+    fn add_assign(&mut self, rhs: Self) {
+        self.value += rhs.value;
+        if self.value > MOD {
+            self.value -= MOD;
+        }
+    }
+}
+
+impl SubAssign for ModInt {
+    fn sub_assign(&mut self, rhs: Self) {
+        self.value -= rhs.value;
+        if self.value < 0 {
+            self.value += MOD;
+        }
+    }
+}
+
+impl MulAssign for ModInt {
+    fn mul_assign(&mut self, rhs: Self) {
+        self.value = self.value * rhs.value % MOD;
+    }
 }
 
 #[test]

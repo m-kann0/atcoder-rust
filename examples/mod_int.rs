@@ -9,6 +9,10 @@ struct ModInt {
 }
 
 impl ModInt {
+    fn new(v: i64) -> ModInt {
+        ModInt { value: v }
+    }
+
     fn pow(self, x: i64) -> ModInt {
         if x == 0 {
             return ModInt { value: 1 };
