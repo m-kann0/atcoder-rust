@@ -12,49 +12,44 @@ fn main() {
 fn solve(input: &str) -> String {
     let mut iterator = input.split_whitespace();
 
-    let n: u32 = iterator.next().unwrap().parse().unwrap();
-    let a: u32 = iterator.next().unwrap().parse().unwrap();
-    let b: u32 = iterator.next().unwrap().parse().unwrap();
-    println!("A");
-    let (fac, finv) = init(n + 1);
-    println!("B");
-    let mut answer: u32 = 0;
-    for i in 1..(n + 1) {
-        if i == a || i == b {
-            continue
-        }
-        answer = (answer + comb(n, i, &fac, &finv)) % MOD;
-    }
-    println!("C");
-    return format!("{}", answer);
-}
+    let n: i64 = iterator.next().unwrap().parse().unwrap();
+    let a: i64 = iterator.next().unwrap().parse().unwrap();
+    let b: i64 = iterator.next().unwrap().parse().unwrap();
 
-const MOD: u32 = 1000000007;
-
-fn init(n: u32) -> (Vec<u32>, Vec<u32>) {
-    let mut fac = vec![0; n as usize];
-    println!("A1");
-    let mut finv = vec![0; n as usize];
-    println!("A2");
-    let mut inv = vec![0; n as usize];
-    println!("A3");
-
-    fac[0] = 1;
-    fac[1] = 1;
-    finv[0] = 1;
-    finv[1] = 1;
-    inv[1] = 1;
-    for i in 2..n as usize {
-        fac[i] = (fac[i - 1] as u64 * i as u64 % MOD as u64) as u32;
-        inv[i] = MOD - (inv[MOD as usize % i] as u64 * (MOD as u64 / i as u64) % MOD as u64) as u32;
-        finv[i] = (finv[i - 1] as u64 * inv[i] as u64 % MOD as u64) as u32;
+    let mut ans: i64 = pow(2, n);
+    ans = (ans - 1) % MOD;
+    ans = (ans - comb(n, a)) % MOD;
+    ans = (ans - comb(n, b)) % MOD;
+    if ans < 0 {
+        ans += MOD;
     }
 
-    (fac, finv)
+    return format!("{}", ans);
 }
 
-fn comb(n: u32, r: u32, fac: &Vec<u32>, finv: &Vec<u32>) -> u32 {
-    return fac[n as usize] * (finv[r as usize] * finv[n as usize - r as usize] % MOD) % MOD;
+const MOD: i64 = 1000000007;
+
+fn pow(n: i64, x: i64) -> i64 {
+    if x == 0 {
+        return 1;
+    }
+
+    return if x % 2 == 0 {
+        let t = pow(n, x / 2);
+        t * t % MOD
+    } else {
+        n * pow(n, x - 1) % MOD
+    }
+}
+
+fn comb(n: i64, k: i64) -> i64 {
+    let mut numerator: i64 = 1;
+    let mut denominator: i64 = 1;
+    for i in 0..k {
+        numerator = numerator * (n - i) % MOD;
+        denominator = denominator * (k - i) % MOD;
+    }
+    numerator * pow(denominator, MOD - 2) % MOD
 }
 
 #[test]
