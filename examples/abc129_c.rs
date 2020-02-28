@@ -12,49 +12,31 @@ fn main() {
 fn solve(input: &str) -> String {
     let mut iterator = input.split_whitespace();
 
-    let n: u64 = iterator.next().unwrap().parse().unwrap();
+    let n: usize = iterator.next().unwrap().parse().unwrap();
     let m: usize = iterator.next().unwrap().parse().unwrap();
 
-    let mut prev: i64 = -1;
-    let mut vec: Vec<i64> = Vec::with_capacity(m + 2);
-    vec.push(-1);
+    let mut broken: Vec<bool> = vec![false; n + 1];
     for _i in 0..m {
-        let current = iterator.next().unwrap().parse().unwrap();
-        if prev + 1 == current {
-            // 連続したら到達不可能
-            return String::from("0");
+        let a: usize = iterator.next().unwrap().parse().unwrap();
+        broken[a] = true;
+    }
+
+    let mut dp: Vec<usize> = vec![0; n + 1];
+    dp[n] = 1;
+    dp[n - 1] = if broken[n - 1] { 0 } else { 1 };
+    for i in (0..(n-1)).rev() {
+        if broken[i] {
+            dp[i] = 0;
+            continue;
         }
-        vec.push(current);
-        prev = current;
-    }
-    vec.push((n + 1) as i64);
 
-    let mut ans: u64 = 1;
-    let mut memo: Vec<u64> = vec![0; 10_001];
-    for i in 1..(m + 2) {
-        ans *= fib((vec[i] - vec[i - 1] - 2) as usize, &mut memo) % MOD;
+        dp[i] = (dp[i + 1] + dp[i + 2]) % MOD;
     }
-    ans %= MOD;
 
-    return ans.to_string();
+    return dp[0].to_string();
 }
 
-const MOD: u64 = 1_000_000_007;
-
-fn fib(n: usize, memo: &mut Vec<u64>) -> u64 {
-    if memo[n] != 0 {
-        return memo[n];
-    }
-
-    if n <= 1 {
-        memo[n] = 1;
-        return 1;
-    }
-
-    let result = (fib(n - 2, memo) + fib(n - 1, memo));
-    memo[n] = result;
-    result
-}
+const MOD: usize = 1_000_000_007;
 
 #[test]
 fn test() {
