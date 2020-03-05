@@ -27,9 +27,8 @@ fn solve(input: &str) -> String {
         }
     }
 
-    let mut prev = ans;
+    let mut a = ans;
     for i in 1..n {
-        let mut a = prev;
         if s[i] == 'E' {
             a -= 1;
         }
@@ -37,7 +36,6 @@ fn solve(input: &str) -> String {
             a += 1;
         }
         ans = min(ans, a);
-        prev = a;
     }
 
     return ans.to_string();
