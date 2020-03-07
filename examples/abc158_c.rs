@@ -16,19 +16,14 @@ fn solve(input: &str) -> String {
     let a: usize = iterator.next().unwrap().parse().unwrap();
     let b: usize = iterator.next().unwrap().parse().unwrap();
 
-    let a1: usize = (a as f64 / 0.08).ceil() as usize;
-    let a2: usize = ((a + 1) as f64 / 0.08).ceil() as usize;
-
-    let b1: usize = (b as f64 / 0.10).ceil() as usize;
-    let b2: usize = ((b + 1) as f64 / 0.10).ceil() as usize;
-
-    if b1 >= a2 || a1 >= b2 {
-        return "-1".to_string()
+    for i in 1..10000 {
+        if ((i as f64) * 0.08) as usize == a
+            && ((i as f64) * 0.10) as usize == b {
+            return i.to_string();
+        }
     }
 
-    let ans = max(a1, b1);
-
-    return ans.to_string();
+    return "-1".to_string();
 }
 
 #[test]
