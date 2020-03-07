@@ -5,10 +5,12 @@ fn main() {
     let mut buf = String::new();
     std::io::stdin().read_to_string(&mut buf).unwrap();
 
-    solve(&buf);
+    let answer = solve(&buf);
+
+    println!("{}", answer);
 }
 
-fn solve(input: &str) -> () {
+fn solve(input: &str) -> String {
     let mut iterator = input.split_whitespace();
 
     let s: String = iterator.next().unwrap().to_string();
@@ -41,15 +43,10 @@ fn solve(input: &str) -> () {
     }
 
     if is_reverse {
-        for c in vec.iter().rev() {
-            print!("{}", c);
-        }
+        vec.into_iter().rev().collect::<String>()
     } else {
-        for c in vec.iter() {
-            print!("{}", c);
-        }
+        vec.into_iter().collect::<String>()
     }
-    println!()
 }
 
 #[test]
