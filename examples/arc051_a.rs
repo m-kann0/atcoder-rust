@@ -72,9 +72,18 @@ impl Circle {
     }
 
     fn wrap_point(&self, point: &Point) -> bool {
-        let dist: f64 = (((point.x - self.center.x).pow(2) + (point.y - self.center.y).pow(2)) as f64).sqrt();
+        let dist = dist(
+            point.x as f64,
+            point.y as f64,
+            self.center.x as f64,
+            self.center.y as f64,
+        );
         self.r as f64 >= dist
     }
+}
+
+fn dist(x1: f64, y1: f64, x2: f64, y2: f64) -> f64 {
+    ((x2 - x1).powi(2) + (y2 - y1).powi(2)).sqrt()
 }
 
 impl Rectangle {
