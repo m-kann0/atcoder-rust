@@ -14,16 +14,17 @@ fn solve(input: &str) -> String {
 
     let s: &str = iterator.next().unwrap();
 
-    if s.starts_with("keyence")
-        || s.starts_with("keyenc") && s.ends_with("e")
-        || s.starts_with("keyen") && s.ends_with("ce")
-        || s.starts_with("keye") && s.ends_with("nce")
-        || s.starts_with("key") && s.ends_with("ence")
-        || s.starts_with("ke") && s.ends_with("yence")
-        || s.starts_with("k") && s.ends_with("eyence")
-        || s.ends_with("keyence")
-    {
-        return String::from("YES");
+    let n = s.len();
+
+    for i in 0..n {
+        for j in i..n {
+            if &s[..i] == "keyence"
+                || &s[j..] == "keyence"
+                || &format!("{}{}", &s[..i], &s[j..]) == "keyence"
+            {
+                return String::from("YES");
+            }
+        }
     }
 
     return String::from("NO");
