@@ -20,16 +20,14 @@ fn solve(input: &str) -> String {
 
     let mut ans = 200;
 
-    for i in 0..(2_usize.pow(n as u32)) {
-        let binary = format!("{:0>1$b}", i, n);
-
+    for i in 0..(1 << n) {
         let mut t1 = 0;
         let mut t2 = 0;
-        for (time, bit) in t.iter().zip(binary.chars()) {
-            if bit == '0' {
-                t1 += *time;
+        for j in 0..n {
+            if i >> j & 1 == 0 {
+                t1 += t[j];
             } else {
-                t2 += *time;
+                t2 += t[j];
             }
         }
         ans = min(ans, max(t1, t2));
