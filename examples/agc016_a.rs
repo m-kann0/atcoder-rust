@@ -1,5 +1,5 @@
 use std::io::Read;
-use std::collections::HashSet;
+use std::cmp::min;
 
 fn main() {
     let mut buf = String::new();
@@ -13,34 +13,30 @@ fn main() {
 fn solve(input: &str) -> String {
     let mut iterator = input.split_whitespace();
 
-    let s = iterator.next().unwrap();
+    let s: Vec<char> = iterator.next().unwrap().chars().collect();
 
-    let mut set_list: Vec<HashSet<char>> = vec![HashSet::new(); s.len()];
-    for (i, c) in s.chars().enumerate() {
-        set_list[i].insert(c);
-    }
-
-    let mut done = false;
-    let mut count = 0;
-    while !done {
-        for c in 'a' as u8..'z' as u8 + 1 {
-            let c = c as char;
-            if set_list.iter().all(|set| set.contains(&c)) {
-                done = true;
-                break;
-            }
+    let mut ans = 100;
+    for c in 'a' as u8 .. 'z' as u8 + 1 {
+        let c = c as char;
+        if !s.contains(&c) {
+            continue;
         }
-        if !done {
-            for i in 0..(set_list.len() - 1) {
-                let next = set_list[i + 1].clone();
-                set_list[i].extend(next);
+
+        let mut t = s.clone();
+        let mut count = 0;
+        while !t.iter().all(|it| *it == c) {
+            for i in 0 .. t.len() - 1 {
+                if t[i] == c || t[i + 1] == c {
+                    t[i] = c;
+                }
             }
-            set_list.pop();
+            t.pop();
             count += 1;
         }
+        ans = min(ans, count);
     }
 
-    return count.to_string();
+    return ans.to_string();
 }
 
 #[test]
