@@ -1,5 +1,5 @@
 use std::io::Read;
-use std::cmp::min;
+use std::collections::VecDeque;
 
 fn main() {
     let mut buf = String::new();
@@ -10,6 +10,8 @@ fn main() {
     println!("{}", answer);
 }
 
+const INF: isize = 100_001;
+
 fn solve(input: &str) -> String {
     let mut iterator = input.split_whitespace();
 
@@ -17,19 +19,55 @@ fn solve(input: &str) -> String {
     let x: isize = iterator.next().unwrap().parse().unwrap();
     let y: isize = iterator.next().unwrap().parse().unwrap();
 
+    let x = x - 1;
+    let y = y - 1;
+
     let mut counts: Vec<usize> = vec![0; (n + 1) as usize];
 
-    for i in 1..n {
-        for j in i + 1 .. n + 1 {
-            let mut count = j - i;
-            count = min(count, (x - i).abs() + 1 + (j - y).abs());
-            counts[count as usize] += 1;
+    for sv in 0..n {
+        let mut dist: Vec<isize> = vec![INF; n as usize];
+        let mut q: VecDeque<isize> = VecDeque::new();
+
+        dist[sv as usize] = 0;
+        q.push_back(sv);
+
+        while !q.is_empty() {
+            let v = q.pop_front().unwrap();
+            let d = dist[v as usize];
+            if v - 1 >= 0 {
+                if dist[(v - 1) as usize] == INF {
+                    dist[(v - 1) as usize] = d + 1;
+                    q.push_back(v - 1);
+                }
+            }
+            if v + 1 < n {
+                if dist[(v + 1) as usize] == INF {
+                    dist[(v + 1) as usize] = d + 1;
+                    q.push_back(v + 1);
+                }
+            }
+            if v == x {
+                if dist[y as usize] == INF {
+                    dist[y as usize] = d + 1;
+                    q.push_back(y);
+                }
+            }
+            if v == y {
+                if dist[x as usize] == INF {
+                    dist[x as usize] = d + 1;
+                    q.push_back(x);
+                }
+            }
+        }
+
+        for i in 0..n {
+            counts[dist[i as usize] as usize] += 1;
         }
     }
 
     let mut ans = String::new();
     for i in 1..n {
-        ans.push_str(&format!("{}\n", counts[i as usize]))
+        ans.push_str(&format!("{}\n", counts[i as usize] / 2))
     }
     return ans.trim().to_string();
 }
