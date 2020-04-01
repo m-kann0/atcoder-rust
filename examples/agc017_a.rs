@@ -15,56 +15,24 @@ fn solve(input: &str) -> String {
     let n: usize = iterator.next().unwrap().parse().unwrap();
     let p: usize = iterator.next().unwrap().parse().unwrap();
 
-    let mut even: usize = 0;
-    let mut odd: usize = 0;
+    let mut is_all_even: bool = true;
     for _ in 0..n {
         let a: usize = iterator.next().unwrap().parse().unwrap();
-        if a % 2 == 0 {
-            even += 1;
+        if a % 2 == 1 {
+            is_all_even = false;
+            break;
+        }
+    }
+
+    if is_all_even {
+        if p == 0 {
+            format!("{}", 2_u64.pow(n as u32))
         } else {
-            odd += 1;
+            format!("{}", 0)
         }
-    }
-
-    let ans: u64 = if p == 0 {
-        let mut combinations = 1;
-
-        let mut r = 2;
-        while r <= odd {
-            combinations += comb(odd, r);
-            r += 2;
-        }
-
-        2_u64.pow(even as u32) * combinations as u64
     } else {
-        let mut combinations = 0;
-
-        let mut r = 1;
-        while r <= odd {
-            combinations += comb(odd, r);
-            r += 2;
-        }
-
-        2_u64.pow(even as u32) * combinations as u64
-    };
-
-    return ans.to_string();
-}
-
-fn comb(mut n: usize, mut r: usize) -> usize {
-    if r > n / 2 {
-        r = n - r;
+        format!("{}", 2_u64.pow((n - 1) as u32))
     }
-
-    let mut numerator: usize = 1;
-    let mut denominator: usize = 1;
-    while r > 0 {
-        numerator *= n;
-        denominator *= r;
-        n -= 1;
-        r -= 1;
-    }
-    numerator / denominator
 }
 
 #[test]
