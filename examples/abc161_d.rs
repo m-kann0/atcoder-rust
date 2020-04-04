@@ -1,4 +1,5 @@
 use std::io::Read;
+use std::collections::VecDeque;
 
 fn main() {
     let mut buf = String::new();
@@ -14,44 +15,26 @@ fn solve(input: &str) -> String {
 
     let k: usize = iterator.next().unwrap().parse().unwrap();
 
-    let vec = construct(k);
+    let mut queue: VecDeque<usize> = VecDeque::new();
+    for i in 1..10 {
+        queue.push_back(i)
+    }
 
-    return format!("{}", vec[k - 1]);
-}
+    let mut ans: usize = 0;
+    for _ in 0..k {
+        ans = queue.pop_front().unwrap();
 
-fn construct(k: usize) -> Vec<usize> {
-    let mut phase: Vec<usize> = vec![1, 2, 3, 4, 5, 6, 7, 8, 9];
-
-    let mut result: Vec<usize> = Vec::new();
-    result.extend(phase.iter());
-
-    while result.len() < k {
-        let mut next_phase: Vec<usize> = Vec::new();
-        for l in phase {
-            let generated = generate(l);
-            next_phase.extend(generated);
+        let last = ans % 10;
+        if last != 0 {
+            queue.push_back(ans * 10 + last - 1);
         }
-        result.extend(next_phase.iter());
-        phase = next_phase;
+        queue.push_back(ans * 10 + last);
+        if last != 9 {
+            queue.push_back(ans * 10 + last + 1);
+        }
     }
-    result
-}
 
-fn generate(l: usize) -> Vec<usize> {
-    let mut result: Vec<usize> = Vec::new();
-    let last = l % 10;
-    if last == 0 {
-        result.push(l * 10 + 0);
-        result.push(l * 10 + 1);
-    } else if last == 9 {
-        result.push(l * 10 + 8);
-        result.push(l * 10 + 9);
-    } else {
-        result.push(l * 10 + last - 1);
-        result.push(l * 10 + last);
-        result.push(l * 10 + last + 1);
-    }
-    return result;
+    return ans.to_string()
 }
 
 #[test]
