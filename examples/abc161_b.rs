@@ -17,14 +17,7 @@ fn solve(input: &str) -> String {
 
     let a: Vec<usize> = (0..n).map(|_| iterator.next().unwrap().parse().unwrap()).collect();
     let total: usize = a.iter().sum();
-
-    let limit: usize = total / (4 * m);
-    let mut count = 0;
-    for v in a {
-        if (4 * m * v) >= total {
-            count += 1;
-        }
-    }
+    let count: usize = a.iter().filter(|&&it| 4 * m * it >= total).count();
 
     return if count >= m {
         "Yes".to_string()
