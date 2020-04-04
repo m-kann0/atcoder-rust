@@ -1,5 +1,4 @@
 use std::io::Read;
-use std::collections::HashSet;
 use std::cmp::min;
 
 fn main() {
@@ -17,15 +16,8 @@ fn solve(input: &str) -> String {
     let n: isize = iterator.next().unwrap().parse().unwrap();
     let k: isize = iterator.next().unwrap().parse().unwrap();
 
-    let mut history: HashSet<isize> = HashSet::new();
-    let mut x: isize = if n >= k { n % k } else { n };
-    let mut ans: isize = x;
-    while !history.contains(&x) {
-        history.insert(x);
-
-        x = (x - k).abs();
-        ans = min(ans, x);
-    }
+    let a = n % k;
+    let ans = min(a, k - a);
 
     return ans.to_string();
 }
