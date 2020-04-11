@@ -1,5 +1,4 @@
 use std::io::Read;
-use std::collections::HashMap;
 
 fn main() {
     let mut buf = String::new();
@@ -18,22 +17,14 @@ fn solve(input: &str) -> String {
     let s: Vec<char> = iterator.next().unwrap().chars().collect();
     let t: Vec<char> = iterator.next().unwrap().chars().collect();
 
-    let lcm = lcm(n, m);
-    let mut x: HashMap<usize, char> = HashMap::new();
-    for i in 0..n {
-        x.insert(lcm / n * i, s[i]);
-    }
-    for j in 0..m {
-        if x.contains_key(&(lcm / m * j)) && *x.get(&(lcm / m * j)).unwrap() != t[j] {
+    let g = gcd(n, m);
+    for i in 0..g {
+        if s[n / g * i] != t[m / g * i] {
             return "-1".to_string();
         }
     }
 
-    return lcm.to_string();
-}
-
-fn lcm(m: usize, n: usize) -> usize {
-    return m / gcd(m, n) * n;
+    return (n * m / g).to_string();
 }
 
 fn gcd(mut m: usize, mut n: usize) -> usize {
