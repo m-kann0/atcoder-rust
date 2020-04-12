@@ -19,51 +19,31 @@ fn solve(input: &str) -> String {
         return "0".to_string();
     }
 
-    let mut r: Vec<usize> = vec![0; n + 1];
-    let mut g: Vec<usize> = vec![0; n + 1];
-    let mut b: Vec<usize> = vec![0; n + 1];
-    for i in (0..n).rev() {
-        if s[i] == 'R' {
-            r[i] = r[i + 1] + 1;
-            g[i] = g[i + 1];
-            b[i] = b[i + 1];
-        } else if s[i] == 'G' {
-            r[i] = r[i + 1];
-            g[i] = g[i + 1] + 1;
-            b[i] = b[i + 1];
+    let mut count_r = 0;
+    let mut count_g = 0;
+    let mut count_b = 0;
+    for &c in &s {
+        if c == 'R' {
+            count_r += 1;
+        } else if c == 'G' {
+            count_g += 1;
         } else {
-            r[i] = r[i + 1];
-            g[i] = g[i + 1];
-            b[i] = b[i + 1] + 1;
+            count_b += 1;
         }
     }
 
-    let mut ans = 0;
-
+    let mut ans: usize = count_r * count_g * count_b;
     for i in 0..(n - 2) {
         for j in (i + 1)..(n - 1) {
-            let ci = s[i];
-            let cj = s[j];
-            let ng_index = j + (j - i);
-            if ci == 'R' && cj == 'G' || ci == 'G' && cj == 'R' {
-                ans += b[j + 1];
-                if ng_index < n && s[ng_index] == 'B' {
-                    ans -= 1;
-                }
-            } else if ci == 'G' && cj == 'B' || ci == 'B' && cj == 'G' {
-                ans += r[j + 1];
-                if ng_index < n && s[ng_index] == 'R' {
-                    ans -= 1;
-                }
-            } else if ci == 'R' && cj == 'B' || ci == 'B' && cj == 'R' {
-                ans += g[j + 1];
-                if ng_index < n && s[ng_index] == 'G' {
-                    ans -= 1;
-                }
+            let k = j + (j - i);
+            if k >= n {
+                break;
+            }
+            if s[i] != s[j] && s[j] != s[k] && s[k] != s[i] {
+                ans -= 1;
             }
         }
     }
-
     return ans.to_string();
 }
 
