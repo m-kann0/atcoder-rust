@@ -1,4 +1,5 @@
 use std::io::Read;
+use std::cmp::max;
 
 fn main() {
     let mut buf = String::new();
@@ -14,42 +15,22 @@ fn solve(input: &str) -> String {
 
     let s: Vec<char> = iterator.next().unwrap().chars().collect();
 
-    let mut sum: Vec<usize> = vec![0; s.len() + 1];
-    for i in 1..(s.len() + 1) {
-        sum[i] = sum[i - 1] + i;
-    }
+    let n: usize = s.len() + 1;
+    let mut a: Vec<usize> = vec![0; n];
 
-    let mut parts: Vec<String> = Vec::new();
-    let mut part = String::new();
-    let mut prev: char = ' ';
-    for &c in &s {
-        if c != prev {
-            if prev != ' ' {
-                parts.push(part.clone());
-            }
-            part = String::new();
-        }
-        part.push(c);
-        prev = c;
-    }
-    parts.push(part);
-
-    let mut ans = 0;
-    for i in 0..parts.len() {
-        let part = &parts[i];
-        if part.starts_with('<') {
-            ans += sum[part.len()];
-        } else {
-            if i == 0 {
-                ans += sum[part.len()];
-            } else if part.len() <= parts[i - 1].len() {
-                ans += sum[part.len() - 1];
-            } else {
-                ans -= parts[i - 1].len();
-                ans += sum[part.len()];
-            }
+    for i in 0..s.len() {
+        if s[i] == '<' {
+            a[i + 1] = max(a[i + 1], a[i] + 1);
         }
     }
+
+    for i in (0..s.len()).rev() {
+        if s[i] == '>' {
+            a[i] = max(a[i], a[i + 1] + 1);
+        }
+    }
+
+    let ans: usize = a.iter().sum();
     return ans.to_string();
 }
 
