@@ -15,29 +15,13 @@ fn solve(input: &str) -> String {
     let a: usize = iterator.next().unwrap().parse().unwrap();
     let b: usize = iterator.next().unwrap().parse().unwrap();
 
-    let mut ans: usize = 0;
-    let mut year = if a % 4 == 0 {
-        a
-    } else {
-        a + (4 - a % 4)
-    };
-    while year <= b {
-        if is_leap_year(year) {
-            ans += 1;
-        }
-        year += 4;
-    }
+    let ans: usize = count_leap_year(b) - count_leap_year(a - 1);
     return ans.to_string();
 }
 
-fn is_leap_year(year: usize) -> bool {
-    if year % 400 == 0 {
-        return true;
-    }
-    if year % 100 == 0 {
-        return false;
-    }
-    return year % 4 == 0;
+// 0年～year年までのうるう年の回数を数える
+fn count_leap_year(year: usize) -> usize {
+    return year / 4 + year / 400 - year / 100;
 }
 
 #[test]
