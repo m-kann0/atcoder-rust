@@ -1,4 +1,5 @@
 use std::io::Read;
+use std::collections::BinaryHeap;
 
 fn main() {
     let mut buf = String::new();
@@ -18,13 +19,18 @@ fn solve(input: &str) -> String {
         return "NO".to_string();
     }
 
-    let mut a: Vec<usize> = (0..n).map(|_| iterator.next().unwrap().parse().unwrap()).collect();
-    let mut b: Vec<usize> = (0..m).map(|_| iterator.next().unwrap().parse().unwrap()).collect();
-    a.sort_by(|x, y| y.cmp(x));
-    b.sort_by(|x, y| y.cmp(x));
+    let mut a: BinaryHeap<usize> = BinaryHeap::new();
+    for _ in 0..n {
+        a.push(iterator.next().unwrap().parse().unwrap());
+    }
 
-    for i in 0..m {
-        if b[i] > a[i] {
+    let mut b: BinaryHeap<usize> = BinaryHeap::new();
+    for _ in 0..m {
+        b.push(iterator.next().unwrap().parse().unwrap());
+    }
+
+    while !b.is_empty() {
+        if b.pop().unwrap() > a.pop().unwrap() {
             return "NO".to_string();
         }
     }
