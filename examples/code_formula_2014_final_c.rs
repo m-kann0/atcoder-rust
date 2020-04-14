@@ -1,5 +1,5 @@
 use std::io::Read;
-use std::collections::HashSet;
+use std::collections::BTreeSet;
 
 fn main() {
     let mut buf = String::new();
@@ -13,7 +13,7 @@ fn main() {
 fn solve(input: &str) -> String {
     let iterator = input.split_whitespace();
 
-    let mut users: HashSet<String> = HashSet::new();
+    let mut users: BTreeSet<String> = BTreeSet::new();
     for token in iterator {
         let mut token = token.to_string();
         if !token.contains('@') {
@@ -29,8 +29,6 @@ fn solve(input: &str) -> String {
             }
         }
     }
-    let mut users: Vec<String> = users.into_iter().collect();
-    users.sort();
 
     let mut result = String::new();
     for user in users {
