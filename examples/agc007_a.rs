@@ -14,53 +14,18 @@ fn solve(input: &str) -> String {
 
     let h: usize = iterator.next().unwrap().parse().unwrap();
     let w: usize = iterator.next().unwrap().parse().unwrap();
-    let mut map: Vec<Vec<char>> = vec![vec!['.'; w + 2]; h + 2];
-    for i in 0..h {
-        let line: Vec<char> = iterator.next().unwrap().chars().collect();
-        for j in 0..w {
-            map[i + 1][j + 1] = line[j];
-        }
+    let mut total = 0;
+    for _ in 0..h {
+        total += iterator.next().unwrap().chars()
+            .filter(|c| *c == '#')
+            .count();
     }
 
-    let mut possible: bool = true;
-    for i in 1..(h + 1) {
-        for j in 1..(w + 1) {
-            if map[i][j] != '#' {
-                continue;
-            }
-            if i == 1 && j == 1 {
-                if map[i][j + 1] == '#' && map[i + 1][j] == '#' {
-                    possible = false;
-                    break;
-                } else {
-                    continue;
-                }
-            }
-            if i == h && j == w {
-                if map[i][j - 1] == '#' && map[i - 1][j] == '#' {
-                    possible = false;
-                    break;
-                } else {
-                    continue;
-                }
-            }
-
-            if map[i][j + 1] == '#' && map[i + 1][j] == '#' {
-                possible = false;
-                break;
-            }
-            if map[i][j - 1] == '#' && map[i - 1][j] == '#' {
-                possible = false;
-                break;
-            }
-        }
-    }
-
-    return if possible {
-        String::from("Possible")
+    return if total == h + w - 1 {
+        "Possible".to_string()
     } else {
-        String::from("Impossible")
-    };
+        "Impossible".to_string()
+    }
 }
 
 #[test]
