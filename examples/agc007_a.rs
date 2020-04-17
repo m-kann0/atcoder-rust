@@ -23,42 +23,37 @@ fn solve(input: &str) -> String {
     }
 
     let mut possible: bool = true;
-    let mut x = 1;
-    let mut y = 1;
-    let mut d = Direction::RIGHT;
-    while !(x == w && y == h) {
-        if d == Direction::RIGHT && map[y - 1][x] == '#' {
-            possible = false;
-            break;
-        }
-        if d == Direction::DOWN && map[y][x - 1] == '#' {
-            possible = false;
-            break;
-        }
+    for i in 1..(h + 1) {
+        for j in 1..(w + 1) {
+            if map[i][j] != '#' {
+                continue;
+            }
+            if i == 1 && j == 1 {
+                if map[i][j + 1] == '#' && map[i + 1][j] == '#' {
+                    possible = false;
+                    break;
+                } else {
+                    continue;
+                }
+            }
+            if i == h && j == w {
+                if map[i][j - 1] == '#' && map[i - 1][j] == '#' {
+                    possible = false;
+                    break;
+                } else {
+                    continue;
+                }
+            }
 
-        if map[y][x + 1] == '#' && map[y + 1][x] == '#' {
-            possible = false;
-            break;
+            if map[i][j + 1] == '#' && map[i + 1][j] == '#' {
+                possible = false;
+                break;
+            }
+            if map[i][j - 1] == '#' && map[i - 1][j] == '#' {
+                possible = false;
+                break;
+            }
         }
-        if map[y][x + 1] == '#' {
-            d = Direction::RIGHT;
-            x += 1;
-            continue;
-        }
-        if map[y + 1][x] == '#' {
-            d = Direction::DOWN;
-            y += 1;
-            continue;
-        }
-        possible = false;
-        break;
-    }
-
-    if d == Direction::RIGHT && map[y - 1][x] == '#' {
-        possible = false;
-    }
-    if d == Direction::DOWN && map[y][x - 1] == '#' {
-        possible = false;
     }
 
     return if possible {
@@ -66,11 +61,6 @@ fn solve(input: &str) -> String {
     } else {
         String::from("Impossible")
     };
-}
-
-#[derive(PartialEq)]
-enum Direction {
-    RIGHT, DOWN,
 }
 
 #[test]
