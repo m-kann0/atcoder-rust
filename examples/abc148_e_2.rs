@@ -1,5 +1,4 @@
 use std::io::Read;
-use std::cmp::min;
 
 fn main() {
     let mut buf = String::new();
@@ -19,23 +18,13 @@ fn solve(input: &str) -> String {
         return "0".to_string();
     }
 
-    let ans = min(g2(n), g5(n));
-    return ans.to_string();
-}
-
-fn g2(n: usize) -> usize {
-    return g(n / 2, 2) + n / 2;
-}
-
-fn g5(n: usize) -> usize {
-    return g(n / 2, 5);
-}
-
-fn g(n: usize, p: usize) -> usize {
-    if n == 0 {
-        return 0;
+    let mut n = n / 2;
+    let mut ans = 0;
+    while n > 0 {
+        ans += n / 5;
+        n /= 5;
     }
-    return n / p + g(n / p, p);
+    return ans.to_string();
 }
 
 #[test]
