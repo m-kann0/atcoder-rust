@@ -16,15 +16,15 @@ fn solve(input: &str) -> String {
     let n: usize = iterator.next().unwrap().parse().unwrap();
 
     let mut ans: usize = 100;
-    let mut a: usize = 1;
-    while a * a <= n {
+    for a in 1.. {
+        if a * a > n {
+            break;
+        }
         if n % a != 0 {
-            a += 1;
             continue;
         }
         let b = n / a;
         ans = min(ans, f(a, b));
-        a += 1;
     }
     return ans.to_string();
 }
