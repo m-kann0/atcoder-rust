@@ -28,7 +28,7 @@ fn solve(input: &str) -> String {
 
     let mut ans: usize = std::usize::MAX;
     for i in 0..(2_i64.pow(n as u32)) {
-        let bin: Vec<char> = format!("{:0>1$b}", i, n).chars().collect();
+        let bin: Vec<char> = binary_string(i as usize, n).chars().collect();
 
         let mut cost: usize = 0;
         let mut sum: Vec<usize> = vec![0; m];
@@ -50,6 +50,10 @@ fn solve(input: &str) -> String {
         return "-1".to_string();
     }
     return ans.to_string()
+}
+
+fn binary_string(n: usize, keta: usize) -> String {
+    return format!("{:0>1$b}", n, keta);
 }
 
 #[test]
