@@ -12,17 +12,15 @@ fn main() {
 fn solve(input: &str) -> String {
     let mut iterator = input.split_whitespace();
 
-    let mut s: &str = iterator.next().unwrap();
+    let mut s: String = iterator.next().unwrap().to_string();
+
+    let patterns: Vec<&str> = vec!["dream", "dreamer", "erase", "eraser"];
 
     while !s.is_empty() {
-        if s.starts_with("eraser") {
-            s = &s[6..];
-        } else if s.starts_with("erase") {
-            s = &s[5..];
-        } else if s.starts_with("dreamerd") || s.starts_with("dreamere") || s == "dreamer" {
-            s = &s[7..];
-        } else if s.starts_with("dream") {
-            s = &s[5..];
+        let result = patterns.iter().find(|it| s.ends_with(**it));
+        if let Some(x) = result {
+            let len = s.len();
+            s.truncate(len - x.len());
         } else {
             break;
         }
