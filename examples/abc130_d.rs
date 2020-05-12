@@ -25,23 +25,36 @@ fn solve(input: &str) -> String {
 
     let mut ans: usize = 0;
     for i in 0..n {
-        let mut left: isize = -1;
-        let mut right: isize = n as isize;
-        while right - left > 1 {
-            let mid = left + (right - left) / 2;
-            if sum[mid as usize] >= k {
-                right = mid;
-            } else {
-                left = mid;
-            }
-        }
-        if (right as usize) < n {
-            ans += n - right as usize;
+        let result = binary_search(&sum, |x| *x >= k);
+        if let Result::Ok(index) = result {
+            ans += n - index;
         }
         k += a[i]
     }
 
     return ans.to_string();
+}
+
+fn binary_search<E, P>(vec: &Vec<E>, predicate: P) -> Result<usize, ()>
+    where
+        E: PartialOrd,
+        P: Fn(&E) -> bool,
+{
+    let mut ng: isize = -1;
+    let mut ok: isize = vec.len() as isize;
+    while (ok - ng).abs() > 1 {
+        let mid = (ok + ng) / 2;
+        if predicate(&vec[mid as usize]) {
+            ok = mid;
+        } else {
+            ng = mid;
+        }
+    }
+    return if ok >= 0 && ok < vec.len() as isize {
+        Ok(ok as usize)
+    } else {
+        Err(())
+    };
 }
 
 #[test]
