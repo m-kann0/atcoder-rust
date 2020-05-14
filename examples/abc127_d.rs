@@ -16,35 +16,25 @@ fn solve(input: &str) -> String {
     let n: usize = iterator.next().unwrap().parse().unwrap();
     let m: usize = iterator.next().unwrap().parse().unwrap();
 
-    let mut a: BinaryHeap<isize> = BinaryHeap::new();
+    let mut h: BinaryHeap<(usize, usize)> = BinaryHeap::new();
     for _ in 0..n {
         let ai: usize = iterator.next().unwrap().parse().unwrap();
-        a.push(-(ai as isize));
+        h.push((ai, 1));
     }
-
-    let mut vec: Vec<(usize, usize)> = Vec::new();
     for _ in 0..m {
         let bi: usize = iterator.next().unwrap().parse().unwrap();
         let ci: usize = iterator.next().unwrap().parse().unwrap();
-        vec.push((ci, bi));
+        h.push((ci, bi));
     }
 
-    vec.sort();
-
-    while !vec.is_empty() {
-        let mut v = vec.pop().unwrap();
-        while v.1 > 0 {
-            let ai = (-a.pop().unwrap()) as usize;
-            if ai >= v.0 {
-                a.push(-(ai as isize));
-                break;
-            }
-            a.push(-(v.0 as isize));
-            v.1 -= 1;
+    let mut ans = 0;
+    for _ in 0..n {
+        let p = h.pop().unwrap();
+        ans += p.0;
+        if p.1 > 1 {
+            h.push((p.0, p.1 - 1));
         }
     }
-
-    let ans: usize = a.iter().map(|it| (-it) as usize).sum();
     return ans.to_string();
 }
 
