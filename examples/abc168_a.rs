@@ -13,15 +13,11 @@ fn solve(input: &str) -> String {
     let mut iterator = input.split_whitespace();
 
     let n: usize = iterator.next().unwrap().parse().unwrap();
-    let amari = n % 10;
-    if amari == 2 || amari == 4 || amari == 5 || amari == 7 || amari == 9 {
-        return "hon".to_string();
-    }
-    if amari == 3 {
-        return "bon".to_string();
-    }
-
-    return "pon".to_string();
+    return match n % 10 {
+        3 => { "bon".to_string() }
+        2 | 4 | 5 | 7 | 9 => { "hon".to_string() },
+        _ => { "pon".to_string() }
+    };
 }
 
 #[test]
