@@ -17,36 +17,16 @@ fn solve(input: &str) -> String {
         .map(|_| iterator.next().unwrap().parse().unwrap())
         .collect();
     a.sort();
-    let mut b = a.clone();
-    b.reverse();
 
-    let mut ng: isize = -1;
-    let mut ok: isize = n as isize;
-    while (ok - ng).abs() > 1 {
-        let mid = (ok + ng) / 2;
-        let ai = a[mid as usize];
-        let mut c = b.clone();
-        c.remove(n - 1 - mid as usize);
-        if can_survive(ai, &mut c) {
-            ok = mid;
-        } else {
-            ng = mid;
+    let mut sum = 0;
+    let mut t = 0;
+    for i in 0..(n - 1) {
+        sum += a[i];
+        if sum * 2 < a[i + 1] {
+            t = i + 1;
         }
     }
-
-    return format!("{}", n - ok as usize);
-}
-
-fn can_survive(mut size: usize, a: &mut Vec<usize>) -> bool {
-    while !a.is_empty() {
-        let size2: usize = a.pop().unwrap();
-        if size2 <= 2 * size {
-            size += size2;
-        } else {
-            return false;
-        }
-    }
-    return true;
+    return format!("{}", n - t);
 }
 
 #[test]
