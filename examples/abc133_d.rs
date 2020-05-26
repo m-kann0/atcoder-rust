@@ -15,21 +15,19 @@ fn solve(input: &str) -> String {
     let n: usize = iterator.next().unwrap().parse().unwrap();
     let a: Vec<usize> = (0..n).map(|_| iterator.next().unwrap().parse().unwrap()).collect();
 
+    let s: usize = a.iter().sum();
+
     let mut b: Vec<usize> = vec![0; n];
-    for i in 1..n {
-        b[i] = 2 * a[i - 1] - b[i - 1];
-    }
-
-    let d = (*a.last().unwrap() * 2 - *b.last().unwrap()) / 2;
-
+    b[0] = s;
     for i in 0..n {
-        if i % 2 == 0 {
-            b[i] += d;
-        } else {
-            b[i] -= d;
+        if i % 2 == 1 {
+            b[0] -= 2 * a[i];
         }
     }
 
+    for i in 1..n {
+        b[i] = 2 * a[i - 1] - b[i - 1];
+    }
     return b.iter().map(|it| it.to_string()).collect::<Vec<String>>().join(" ");
 }
 
