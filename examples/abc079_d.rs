@@ -21,27 +21,22 @@ fn solve(input: &str) -> String {
             c[i][j] = iterator.next().unwrap().parse().unwrap();
         }
     }
-    let mut a: Vec<usize> = Vec::new();
-    for _ in 0..(h * w) {
-        let ai: isize = iterator.next().unwrap().parse().unwrap();
-        if ai >= 0 {
-            a.push(ai as usize);
-        }
-    }
 
     // ワーシャルフロイド法
-    let mut d: Vec<Vec<usize>> = c.clone();
     for k in 0..10 {
         for i in 0..10 {
             for j in 0..10 {
-                d[i][j] = min(d[i][j], d[i][k] + d[k][j]);
+                c[i][j] = min(c[i][j], c[i][k] + c[k][j]);
             }
         }
     }
 
-    let mut ans = 0;
-    for ai in a {
-        ans += d[ai][1];
+    let mut ans: usize = 0;
+    for _ in 0..(h * w) {
+        let ai: isize = iterator.next().unwrap().parse().unwrap();
+        if ai >= 0 {
+            ans += c[ai as usize][1];
+        }
     }
     return ans.to_string();
 }
