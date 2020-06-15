@@ -18,14 +18,11 @@ fn solve(input: &str) -> String {
     let b: usize = iterator.next().unwrap().parse().unwrap();
     let x: Vec<usize> = (0..n).map(|_| iterator.next().unwrap().parse().unwrap()).collect();
 
-    let mut dp: Vec<usize> = vec![0; n];
+    let mut ans = 0;
     for i in 1..n {
-        dp[i] = min(
-            dp[i - 1] + (x[i] - x[i - 1]) * a,
-            dp[i - 1] + b
-        );
+        ans += min((x[i] - x[i - 1]) * a,b);
     }
-    return dp[n - 1].to_string();
+    return ans.to_string();
 }
 
 #[test]
