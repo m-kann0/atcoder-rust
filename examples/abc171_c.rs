@@ -17,20 +17,14 @@ fn solve(input: &str) -> String {
 
     let mut result = String::new();
     while n > 0 {
+        n -= 1;
         let amari = n % 26;
-        let c: char = if amari == 0 {
-            n /= 26;
-            n -= 1;
-            'z'
-        } else {
-            n /= 26;
-            ('a' as u8 + amari as u8 - 1) as char
-        };
+        let c = ('a' as u8 + amari as u8) as char;
         result.push(c);
+        n /= 26;
     }
 
     let result = result.chars().rev().map(|c| c.to_string()).join("");
-
     return result;
 }
 
