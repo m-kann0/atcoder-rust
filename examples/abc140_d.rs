@@ -14,45 +14,24 @@ fn solve(input: &str) -> String {
 
     let n: usize = iterator.next().unwrap().parse().unwrap();
     let k: usize = iterator.next().unwrap().parse().unwrap();
-    let mut s: Vec<char> = iterator.next().unwrap().chars().collect();
+    let s: Vec<char> = iterator.next().unwrap().chars().collect();
 
-    let mut prev_end = 0;
-    for _ in 0..k {
-        let mut begin = 0;
-        for i in (prev_end + 1)..n {
-            if s[i - 1] != s[i] {
-                begin = i;
-                break;
-            }
-        }
-        if begin == 0 {
-            return (n - 1).to_string();
-        }
-        let mut end = begin;
-        for i in (begin + 1)..n {
-            if s[i - 1] == s[i] {
-                end = i;
-            } else {
-                break;
-            }
-        }
-        for i in begin..=end {
-            if s[i] == 'L' {
-                s[i] = 'R';
-            } else {
-                s[i] = 'L';
-            }
-        }
-        prev_end = end;
-    }
-
-    let mut h: usize = 0;
+    let mut score: usize = 0;
     for i in 1..n {
         if s[i - 1] == s[i] {
-            h += 1;
+            score += 1;
         }
     }
-    h.to_string()
+    for _ in 0..k {
+        if score + 2 <= n - 1 {
+            score += 2;
+        } else if score + 1 <= n - 1 {
+            score += 1;
+        } else {
+            break;
+        }
+    }
+    score.to_string()
 }
 
 #[test]
