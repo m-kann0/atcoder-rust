@@ -1,4 +1,5 @@
 use std::io::Read;
+use std::cmp::min;
 
 fn main() {
     let mut buf = String::new();
@@ -22,16 +23,8 @@ fn solve(input: &str) -> String {
             score += 1;
         }
     }
-    for _ in 0..k {
-        if score + 2 <= n - 1 {
-            score += 2;
-        } else if score + 1 <= n - 1 {
-            score += 1;
-        } else {
-            break;
-        }
-    }
-    score.to_string()
+    let ans = min(score + 2 * k, n - 1);
+    ans.to_string()
 }
 
 #[test]
