@@ -1,5 +1,5 @@
 use std::io::Read;
-use std::collections::HashSet;
+use std::cmp::max;
 
 fn main() {
     let mut buf = String::new();
@@ -15,29 +15,21 @@ fn solve(input: &str) -> String {
 
     let n: usize = iterator.next().unwrap().parse().unwrap();
 
-    if n == 1 {
-        return "a".to_string();
+    let mut results = Vec::new();
+    dfs(n, &mut results, String::new(), -1);
+    results.join("\n")
+}
+
+fn dfs(n: usize, results: &mut Vec<String>, s: String, mx: isize) {
+    if s.len() == n {
+        results.push(s);
+        return;
     }
 
     let alphabets = vec!['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j'];
-
-    let mut prev: Vec<String> = vec!["a".to_string()];
-    for i in 2..=n {
-        let mut next: Vec<String> = Vec::new();
-        for s in prev {
-            let dim = s.chars().collect::<HashSet<char>>().len();
-            for j in 0..(dim + 1) {
-                next.push(format!("{}{}", s, alphabets[j]));
-            }
-        }
-        prev = next;
+    for i in 0..=(mx + 1) {
+        dfs(n, results, format!("{}{}", s, alphabets[i as usize]), max(mx, i));
     }
-
-    let mut result = String::new();
-    for s in prev {
-        result.push_str(&format!("{}\n", s));
-    }
-    result.trim().to_string()
 }
 
 #[test]
