@@ -12,20 +12,9 @@ fn main() {
 fn solve(input: &str) -> String {
     let mut iterator = input.split_whitespace();
 
-    let s: Vec<char> = iterator.next().unwrap().chars().collect();
-
-    if s[0] == 'R' && s[0] == s[1] && s[1] == s[2] {
-        return "3".to_string();
-    }
-
-    if s[0] == 'R' && s[0] == s[1] || s[1] == 'R' && s[1] == s[2] {
-        return "2".to_string();
-    }
-
-    if s[0] == 'R' || s[1] == 'R' || s[2] == 'R' {
-        return "1".to_string();
-    }
-    "0".to_string()
+    let rs: Vec<&str> = iterator.next().unwrap().split('S').collect();
+    let ans = rs.iter().map(|it| it.len()).max().unwrap();
+    ans.to_string()
 }
 
 #[test]
