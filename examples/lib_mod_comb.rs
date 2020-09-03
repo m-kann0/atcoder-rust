@@ -1,32 +1,39 @@
 const MOD: usize = 998244353;
 
-struct ModComb {
-    fac: Vec<usize>,
-    finv: Vec<usize>,
-    inv: Vec<usize>,
+fn main() {
+    let mc = mod_comb::ModComb::init(MOD, 10);
+    println!("{}", mc.calc(5, 3));
 }
 
-impl ModComb {
-    fn init(max: usize) -> ModComb {
-        let mut fac = vec![1; max];
-        let mut finv = vec![1; max];
-        let mut inv = vec![1; max];
-        for i in 2..max {
-            fac[i] = fac[i - 1] * i % MOD;
-            inv[i] = MOD - inv[MOD % i] * (MOD / i) % MOD;
-            finv[i] = finv[i - 1] * inv[i] % MOD;
-        }
-        return ModComb {
-            fac: fac,
-            finv: finv,
-            inv: inv,
-        }
+mod mod_comb {
+    pub struct ModComb {
+        modulo: usize,
+        fac: Vec<usize>,
+        finv: Vec<usize>,
     }
 
-    fn calc(&self, n: usize, k: usize) -> usize {
-        if n < k {
-            return 0;
+    impl ModComb {
+        pub fn init(modulo: usize, max: usize) -> ModComb {
+            let mut fac = vec![1; max];
+            let mut finv = vec![1; max];
+            let mut inv = vec![1; max];
+            for i in 2..max {
+                fac[i] = fac[i - 1] * i % modulo;
+                inv[i] = modulo - inv[modulo % i] * (modulo / i) % modulo;
+                finv[i] = finv[i - 1] * inv[i] % modulo;
+            }
+            ModComb {
+                modulo,
+                fac,
+                finv,
+            }
         }
-        return self.fac[n] * (self.finv[k] * self.finv[n - k] % MOD) % MOD;
+
+        pub fn calc(&self, n: usize, k: usize) -> usize {
+            if n < k {
+                return 0;
+            }
+            self.fac[n] * (self.finv[k] * self.finv[n - k] % self.modulo) % self.modulo
+        }
     }
 }
