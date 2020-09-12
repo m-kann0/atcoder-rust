@@ -25,41 +25,23 @@ fn solve(input: &str) -> String {
 }
 
 fn calc(h: usize, w: usize) -> usize {
-    let mut results = vec![std::usize::MAX];
-
-    {
-        let h1 = h / 3;
+    let mut result = std::usize::MAX;
+    for h1 in 1..h {
         let s1 = h1 * w;
-        let s2 = ((h - h1) / 2) * w;
-        let s3 = h * w - s1 - s2;
-        let smax = max(s1, max(s2, s3));
-        let smin = min(s1, min(s2, s3));
-        results.push(smax - smin);
 
         let s2 = (h - h1) * (w / 2);
         let s3 = h * w - s1 - s2;
         let smax = max(s1, max(s2, s3));
         let smin = min(s1, min(s2, s3));
-        results.push(smax - smin);
-    }
+        result = min(result, smax - smin);
 
-    {
-        let h1 = h / 3 + 1;
-        let s1 = h1 * w;
         let s2 = ((h - h1) / 2) * w;
         let s3 = h * w - s1 - s2;
         let smax = max(s1, max(s2, s3));
         let smin = min(s1, min(s2, s3));
-        results.push(smax - smin);
-
-        let s2 = (h - h1) * (w / 2);
-        let s3 = h * w - s1 - s2;
-        let smax = max(s1, max(s2, s3));
-        let smin = min(s1, min(s2, s3));
-        results.push(smax - smin);
+        result = min(result, smax - smin);
     }
-
-    *results.iter().min().unwrap()
+    result
 }
 
 #[test]
