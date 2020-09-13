@@ -1,5 +1,4 @@
 use std::io::Read;
-use std::cmp::max;
 
 fn main() {
     let mut buf = String::new();
@@ -19,10 +18,12 @@ fn solve(input: &str) -> String {
     let c: isize = iterator.next().unwrap().parse().unwrap();
     let d: isize = iterator.next().unwrap().parse().unwrap();
 
-    let mut m: isize = max(a * c, b * d);
-    m = max(m, a * d);
-    m = max(m, b * c);
-    m.to_string()
+    vec![
+        a * c,
+        a * d,
+        b * c,
+        b * d,
+    ].iter().max().unwrap().to_string()
 }
 
 #[test]
