@@ -21,22 +21,20 @@ fn solve(input: &str) -> String {
         return n.to_string();
     }
 
-    if k == 0 {
-        return "0".to_string();
-    }
-
     let mut ans = 0;
-    let mut current: usize = 1;
-    let mut l: usize = 0;
-    let mut r: usize = 1;
-    while r <= n {
-        current *= s[r - 1];
-        while current > k {
-            current /= s[l];
-            l += 1;
+    let mut current = 1;
+    let mut right = 0;
+    for left in 0..n {
+        while right < n && current * s[right] <= k {
+            current *= s[right];
+            right += 1;
         }
-        ans = max(ans, r - l);
-        r += 1;
+        ans = max(ans, right - left);
+        if left == right {
+            right += 1;
+        } else {
+            current /= s[left];
+        }
     }
     ans.to_string()
 }
