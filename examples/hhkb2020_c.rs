@@ -1,6 +1,5 @@
 use std::io::Read;
-use std::collections::{BinaryHeap, HashSet};
-use std::cmp::Reverse;
+use std::collections::HashSet;
 
 fn main() {
     let mut buf = String::new();
@@ -17,23 +16,15 @@ fn solve(input: &str) -> String {
     let n: usize = iterator.next().unwrap().parse().unwrap();
     let p: Vec<usize> = (0..n).map(|_| iterator.next().unwrap().parse().unwrap()).collect();
 
-    let mut pq: BinaryHeap<Reverse<usize>> = BinaryHeap::new();
-    for i in 0..=200_001 {
-        pq.push(Reverse(i));
-    }
-
     let mut result = String::new();
+    let mut ans = 0;
     let mut used: HashSet<usize> = HashSet::new();
     for i in 0..n {
         used.insert(p[i]);
-        loop {
-            let m = pq.pop().unwrap().0;
-            if !used.contains(&m) {
-                result.push_str(&format!("{}\n", m));
-                pq.push(Reverse(m));
-                break;
-            }
+        while used.contains(&ans) {
+            ans += 1;
         }
+        result.push_str(&format!("{}\n", ans));
     }
     result.trim().to_string()
 }
