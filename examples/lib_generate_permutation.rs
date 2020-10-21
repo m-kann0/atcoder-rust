@@ -4,6 +4,7 @@ fn main() {
         eprintln!("p = {:?}", p);
     }
 
+    // 10桁はMLEの可能性あり。
     let perms = generate_permutation(10);
     eprintln!("perms.len() = {:?}", perms.len());
 }
