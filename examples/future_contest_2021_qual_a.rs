@@ -11,7 +11,7 @@ fn main() {
     println!("{}", answer);
 }
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Eq, PartialEq)]
 struct Point {
     x: usize,
     y: usize,
@@ -23,7 +23,7 @@ impl Point {
     }
 }
 
-const INF: usize = 999;
+const INF: usize = std::usize::MAX;
 
 fn solve(input: &str) -> String {
     let mut iterator = input.split_whitespace();
@@ -41,8 +41,8 @@ fn solve(input: &str) -> String {
     let mut current = Point::new(0, 0);
     let mut i = 0;
     while i < 100 {
-        let card = cards[i];
         if i == 99 {
+            let card = cards[i];
             let mut r = move_to(current, card);
             result.append(&mut r);
             result.push('I');
@@ -51,38 +51,200 @@ fn solve(input: &str) -> String {
             break;
         }
 
-        // 直接 i -> i + 1 と辿った場合
+        if i == 98 {
+            // 直接 card1 -> card2 と辿った場合
+            let card1 = cards[i];
+            let card2 = cards[i + 1];
+            let d1 =
+                dist(current, card1)
+                    + dist(card1, card2);
+            // card2に寄り道した場合
+            let empty1 = find_empty(card1, &map);
+            let d2 =
+                dist(current, card2)
+                    + dist(card2, empty1)
+                    + dist(empty1, card1)
+                    + dist(card1, empty1);
+
+            if d1 <= d2 {
+                let mut r = move_to(current, card1);
+                result.append(&mut r);
+                result.push('I');
+                current = card1;
+                map[current.x][current.y] = INF;
+            } else {
+                let mut r = move_to(current, card2);
+                result.append(&mut r);
+                result.push('I');
+                current = card2;
+                map[current.x][current.y] = INF;
+                let mut r = move_to(current, empty1);
+                result.append(&mut r);
+                result.push('O');
+                current = empty1;
+                map[current.x][current.y] = i + 1;
+                cards[i + 1] = empty1;
+                let mut r = move_to(current, card1);
+                result.append(&mut r);
+                result.push('I');
+                current = card1;
+                map[current.x][current.y] = INF;
+            }
+
+            i += 1;
+            continue;
+        }
+
         let card1 = cards[i];
         let card2 = cards[i + 1];
+        let card3 = cards[i + 2];
+        let empty1 = find_empty(card1, &map);
+        let empty2 = find_empty(empty1, &map);
+        let empty21 = find_empty(card2, &map);
+        // 直接 card1 -> card2 -> card3 と辿った場合
         let d1 =
             dist(current, card1)
-                + dist(card1, card2);
-        // i + 1に寄り道した場合
-        let empty = find_empty(card1, &map);
+                + dist(card1, card2)
+                + dist(card2, card3);
+        // card2だけに寄り道した場合
         let d2 =
             dist(current, card2)
-                + dist(card2, empty)
-                + dist(empty, card1)
-                + dist(card1, empty);
-        // コストが安い方を採用
-        if d1 <= d2 {
+                + dist(card2, empty1)
+                + dist(empty1, card1)
+                + dist(card1, empty1)
+                + dist(empty1, card3);
+        // card3だけに寄り道した場合
+        // current -> card3 -> empty1 -> card1 -> empty1 -> empty21 -> card2 -> empty21
+        let d3 =
+            dist(current, card3)
+                + dist(card3, empty1)
+                + dist(empty1, card1)
+                + dist(card1, empty1)
+                + dist(empty1, empty21)
+                + dist(empty21, card2)
+                + dist(card2, empty21);
+        // current -> card3 -> card2 -> empty2 -> empty1 -> current -> empty1 -> empty2
+        let d4 = if i + 2 >= 100 { INF } else {
+            let card3 = cards[i + 2];
+            let empty2 = find_empty(empty1, &map);
+            dist(current, card3)
+                + dist(card3, card2)
+                + dist(card2, empty2)
+                + dist(empty2, empty1) * 2
+                + dist(empty1, card1) * 2
+        };
+        // current -> card2 -> card3 -> empty2 -> empty1 -> current -> empty1 -> empty2
+        let d5 = if i + 2 >= 100 { INF } else {
+            let card3 = cards[i + 2];
+            let empty2 = find_empty(empty1, &map);
+            dist(current, card2)
+                + dist(card2, card3)
+                + dist(card3, empty2)
+                + dist(empty2, empty1) * 2
+                + dist(empty1, card1) * 2
+        };
+
+        // コストが最小のものを採用
+        let d = vec![d1, d2, d3, d4, d5];
+        let min_d = *d.iter().min().unwrap();
+        if min_d == d1 {
+            // eprintln!("d1");
+            let mut r = move_to(current, card1);
+            result.append(&mut r);
+            result.push('I');
+            current = card1;
+            map[current.x][current.y] = INF;
+        } else if min_d == d2 {
+            // eprintln!("d2");
+            let mut r = move_to(current, card2);
+            result.append(&mut r);
+            result.push('I');
+            current = card2;
+            map[current.x][current.y] = INF;
+            let mut r = move_to(current, empty1);
+            result.append(&mut r);
+            result.push('O');
+            current = empty1;
+            map[current.x][current.y] = i + 1;
+            cards[i + 1] = empty1;
+            let mut r = move_to(current, card1);
+            result.append(&mut r);
+            result.push('I');
+            current = card1;
+            map[current.x][current.y] = INF;
+        } else if min_d == d3 {
+            // current -> card3 -> empty1 -> card1 -> empty1 -> empty21 -> card2 -> empty21
+            let mut r = move_to(current, card3);
+            result.append(&mut r);
+            result.push('I');
+            current = card3;
+            map[current.x][current.y] = INF;
+            let mut r = move_to(current, empty1);
+            result.append(&mut r);
+            result.push('O');
+            current = empty1;
+            map[current.x][current.y] = i + 1;
+            cards[i + 2] = empty1;
+            let mut r = move_to(current, card1);
+            result.append(&mut r);
+            result.push('I');
+            current = card1;
+            map[current.x][current.y] = INF;
+        } else if min_d == d4 {
+            // eprintln!("d4");
+            // current -> card3 -> card2 -> empty2 -> empty1 -> current -> empty1 -> empty2
+            let mut r = move_to(current, card3);
+            result.append(&mut r);
+            result.push('I');
+            current = card3;
+            map[current.x][current.y] = INF;
+            let mut r = move_to(current, card2);
+            result.append(&mut r);
+            result.push('I');
+            current = card2;
+            map[current.x][current.y] = INF;
+            let mut r = move_to(current, empty2);
+            result.append(&mut r);
+            result.push('O');
+            current = empty2;
+            map[current.x][current.y] = i + 1;
+            cards[i + 1] = current;
+            let mut r = move_to(current, empty1);
+            result.append(&mut r);
+            result.push('O');
+            current = empty1;
+            map[current.x][current.y] = i + 2;
+            cards[i + 2] = current;
             let mut r = move_to(current, card1);
             result.append(&mut r);
             result.push('I');
             current = card1;
             map[current.x][current.y] = INF;
         } else {
+            // eprintln!("d5");
+            // current -> card2 -> card3 -> empty2 -> empty1 -> current -> empty1 -> empty2
             let mut r = move_to(current, card2);
             result.append(&mut r);
             result.push('I');
             current = card2;
             map[current.x][current.y] = INF;
-            let mut r = move_to(current, empty);
+            let mut r = move_to(current, card3);
+            result.append(&mut r);
+            result.push('I');
+            current = card3;
+            map[current.x][current.y] = INF;
+            let mut r = move_to(current, empty2);
             result.append(&mut r);
             result.push('O');
-            current = empty;
+            current = empty2;
+            map[current.x][current.y] = i + 2;
+            cards[i + 2] = current;
+            let mut r = move_to(current, empty1);
+            result.append(&mut r);
+            result.push('O');
+            current = empty1;
             map[current.x][current.y] = i + 1;
-            cards[i + 1] = empty;
+            cards[i + 1] = current;
             let mut r = move_to(current, card1);
             result.append(&mut r);
             result.push('I');
@@ -138,7 +300,7 @@ fn find_empty(point: Point, map: &Vec<Vec<usize>>) -> Point {
     q.push_back(point);
     visited[point.x][point.y] = true;
     while let Some(p) = q.pop_front() {
-        if map[p.x][p.y] == INF {
+        if p != point && map[p.x][p.y] == INF {
             return p;
         }
         for i in 0..4 {
