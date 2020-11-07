@@ -82,18 +82,12 @@ fn solve(input: &str) -> String {
             result.push('O');
             current = empty;
             map[current.x][current.y] = i + 1;
+            cards[i + 1] = empty;
             let mut r = move_to(current, card1);
             result.append(&mut r);
             result.push('I');
             current = card1;
             map[current.x][current.y] = INF;
-            let mut r = move_to(current, empty);
-            result.append(&mut r);
-            result.push('I');
-            current = empty;
-            map[current.x][current.y] = INF;
-
-            i += 1;
         }
 
         i += 1;
