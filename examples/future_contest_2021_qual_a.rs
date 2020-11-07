@@ -59,7 +59,7 @@ fn solve(input: &str) -> String {
                 dist(current, card1)
                     + dist(card1, card2);
             // card2に寄り道した場合
-            let empty1 = find_empty(card1, &map);
+            let empty1 = find_empty2(card1, &map, current, card2);
             let d2 =
                 dist(current, card2)
                     + dist(card2, empty1)
@@ -98,45 +98,68 @@ fn solve(input: &str) -> String {
         let card1 = cards[i];
         let card2 = cards[i + 1];
         let card3 = cards[i + 2];
-        let empty1 = find_empty(card1, &map);
-        let empty2 = find_empty(empty1, &map);
-        let empty21 = find_empty(card2, &map);
         // 直接 card1 -> card2 -> card3 と辿った場合
-        let d1 =
+        let d1 = {
             dist(current, card1)
                 + dist(card1, card2)
-                + dist(card2, card3);
+                + dist(card2, card3)
+        };
         // card2だけに寄り道した場合
-        let d2 =
+        let d2 = {
+            let empty1 = find_empty2(card1, &map, current, card2);
             dist(current, card2)
                 + dist(card2, empty1)
                 + dist(empty1, card1)
                 + dist(card1, empty1)
-                + dist(empty1, card3);
+                + dist(empty1, card3)
+        };
         // card3だけに寄り道した場合
         // current -> card3 -> empty1 -> card1 -> empty1 -> empty21 -> card2 -> empty21
-        let d3 =
+        let d3 = {
+            let empty1 = find_empty2(card1, &map, card3, card2);
+            let empty21 = if i + 3 >= 100 {
+                find_empty2(card2, &map, empty1, empty1)
+            } else {
+                find_empty2(card2, &map, empty1, cards[i + 3])
+            };
             dist(current, card3)
                 + dist(card3, empty1)
                 + dist(empty1, card1)
                 + dist(card1, empty1)
                 + dist(empty1, empty21)
                 + dist(empty21, card2)
-                + dist(card2, empty21);
-        // current -> card3 -> card2 -> empty2 -> empty1 -> current -> empty1 -> empty2
+                + dist(card2, empty21)
+        };
+        // current -> card3 -> card2 -> empty2 -> empty1 -> card1 -> empty1 -> empty2
         let d4 = if i + 2 >= 100 { INF } else {
-            let card3 = cards[i + 2];
-            let empty2 = find_empty(empty1, &map);
+            let empty1 = if i + 3 >= 100 {
+                find_empty2(card1, &map, card2, card2)
+            } else {
+                find_empty2(card1, &map, card2, cards[i + 3])
+            };
+            let empty2 = if i + 3 >= 100 {
+                find_empty2(empty1, &map, card2, card2)
+            } else {
+                find_empty2(empty1, &map, card2, cards[i + 3])
+            };
             dist(current, card3)
                 + dist(card3, card2)
                 + dist(card2, empty2)
                 + dist(empty2, empty1) * 2
                 + dist(empty1, card1) * 2
         };
-        // current -> card2 -> card3 -> empty2 -> empty1 -> current -> empty1 -> empty2
+        // current -> card2 -> card3 -> empty2 -> empty1 -> card1 -> empty1 -> empty2
         let d5 = if i + 2 >= 100 { INF } else {
-            let card3 = cards[i + 2];
-            let empty2 = find_empty(empty1, &map);
+            let empty1 = if i + 3 >= 100 {
+                find_empty2(card1, &map, card3, card3)
+            } else {
+                find_empty2(card1, &map, card3, cards[i + 3])
+            };
+            let empty2 = if i + 3 >= 100 {
+                find_empty2(empty1, &map, card3, card3)
+            } else {
+                find_empty2(empty1, &map, card3, cards[i + 3])
+            };
             dist(current, card2)
                 + dist(card2, card3)
                 + dist(card3, empty2)
@@ -156,6 +179,8 @@ fn solve(input: &str) -> String {
             map[current.x][current.y] = INF;
         } else if min_d == d2 {
             // eprintln!("d2");
+            let empty1 = find_empty2(card1, &map, current, card2);
+
             let mut r = move_to(current, card2);
             result.append(&mut r);
             result.push('I');
@@ -173,7 +198,10 @@ fn solve(input: &str) -> String {
             current = card1;
             map[current.x][current.y] = INF;
         } else if min_d == d3 {
+            // eprintln!("d3 i={}", i);
             // current -> card3 -> empty1 -> card1 -> empty1 -> empty21 -> card2 -> empty21
+            let empty1 = find_empty2(card1, &map, card3, card2);
+
             let mut r = move_to(current, card3);
             result.append(&mut r);
             result.push('I');
@@ -183,7 +211,7 @@ fn solve(input: &str) -> String {
             result.append(&mut r);
             result.push('O');
             current = empty1;
-            map[current.x][current.y] = i + 1;
+            map[current.x][current.y] = i + 2;
             cards[i + 2] = empty1;
             let mut r = move_to(current, card1);
             result.append(&mut r);
@@ -191,8 +219,19 @@ fn solve(input: &str) -> String {
             current = card1;
             map[current.x][current.y] = INF;
         } else if min_d == d4 {
-            // eprintln!("d4");
+            // eprintln!("d4 i={}", i);
             // current -> card3 -> card2 -> empty2 -> empty1 -> current -> empty1 -> empty2
+            let empty1 = if i + 3 >= 100 {
+                find_empty2(card1, &map, card2, card2)
+            } else {
+                find_empty2(card1, &map, card2, cards[i + 3])
+            };
+            let empty2 = if i + 3 >= 100 {
+                find_empty2(empty1, &map, card2, card2)
+            } else {
+                find_empty2(empty1, &map, card2, cards[i + 3])
+            };
+
             let mut r = move_to(current, card3);
             result.append(&mut r);
             result.push('I');
@@ -221,8 +260,19 @@ fn solve(input: &str) -> String {
             current = card1;
             map[current.x][current.y] = INF;
         } else {
-            // eprintln!("d5");
+            // eprintln!("d5 i={}", i);
             // current -> card2 -> card3 -> empty2 -> empty1 -> current -> empty1 -> empty2
+            let empty1 = if i + 3 >= 100 {
+                find_empty2(card1, &map, card3, card3)
+            } else {
+                find_empty2(card1, &map, card3, cards[i + 3])
+            };
+            let empty2 = if i + 3 >= 100 {
+                find_empty2(empty1, &map, card3, card3)
+            } else {
+                find_empty2(empty1, &map, card3, cards[i + 3])
+            };
+
             let mut r = move_to(current, card2);
             result.append(&mut r);
             result.push('I');
@@ -262,32 +312,40 @@ fn dist(p1: Point, p2: Point) -> usize {
         + (p1.y as isize - p2.y as isize).abs() as usize
 }
 
-fn cost(ope: &Vec<char>) -> usize {
-    let mut cost: usize = 0;
-    for &c in ope {
-        match c {
-            'U' | 'D' | 'L' | 'R' => {
-                cost += 1;
-            },
-            _ => {},
-        }
-    }
-    cost
-}
+/// pointから一番近い空き地を探す
+fn find_empty2(point: Point, map: &Vec<Vec<usize>>, current: Point, next: Point) -> Point {
+    let dx = vec![-1, 1, 0, 0];
+    let dy = vec![0, 0, -1, 1];
 
-fn exist(from: Point, to: Point, target: usize, map: &Vec<Vec<usize>>) -> Option<Point> {
-    let minx = min(from.x, to.x);
-    let maxx = max(from.x, to.x);
-    let miny = min(from.y, to.y);
-    let maxy = max(from.y, to.y);
-    for x in minx..=maxx {
-        for y in miny..=maxy {
-            if map[x][y] == target {
-                return Some(Point::new(x, y));
+    let min_x = min(point.x, min(current.x, next.x));
+    let max_x = max(point.x, max(current.x, next.x));
+    let min_y = min(point.y, min(current.y, next.y));
+    let max_y = max(point.y, max(current.y, next.y));
+
+    let mut q: VecDeque<Point> = VecDeque::new();
+    let mut visited: Vec<Vec<bool>> = vec![vec![false; 20]; 20];
+    q.push_back(point);
+    visited[point.x][point.y] = true;
+    while let Some(p) = q.pop_front() {
+        if p != point && map[p.x][p.y] == INF {
+            return p;
+        }
+        for i in 0..4 {
+            let nx = p.x as isize + dx[i];
+            let ny = p.y as isize + dy[i];
+            if nx < min_x as isize || nx > max_x as isize || ny < min_y as isize || ny > max_y as isize {
+                continue;
             }
+            let nx = nx as usize;
+            let ny = ny as usize;
+            if visited[nx][ny] {
+                continue;
+            }
+            q.push_back(Point::new(nx, ny));
+            visited[nx][ny] = true;
         }
     }
-    None
+    find_empty(point, map)
 }
 
 /// pointから一番近い空き地を探す
@@ -319,41 +377,6 @@ fn find_empty(point: Point, map: &Vec<Vec<usize>>) -> Point {
         }
     }
     point
-}
-
-fn exist_empty(from: Point, to: Point, map: &Vec<Vec<usize>>) -> Option<Point> {
-    let minx = min(from.x, to.x);
-    let maxx = max(from.x, to.x);
-    let miny = min(from.y, to.y);
-    let maxy = max(from.y, to.y);
-
-    let dx = vec![-1, 1, 0, 0];
-    let dy = vec![0, 0, -1, 1];
-
-    let mut q: VecDeque<Point> = VecDeque::new();
-    let mut visited: Vec<Vec<bool>> = vec![vec![false; 20]; 20];
-    q.push_back(to);
-    visited[to.x][to.y] = true;
-    while let Some(p) = q.pop_front() {
-        if map[p.x][p.y] == INF {
-            return Some(p);
-        }
-        for i in 0..4 {
-            let nx = p.x as isize + dx[i];
-            let ny = p.y as isize + dy[i];
-            if nx < minx as isize || nx > maxx as isize || ny < miny as isize || ny > maxy as isize {
-                continue;
-            }
-            let nx = nx as usize;
-            let ny = ny as usize;
-            if visited[nx][ny] {
-                continue;
-            }
-            q.push_back(Point::new(nx, ny));
-            visited[nx][ny] = true;
-        }
-    }
-    None
 }
 
 fn move_to(from: Point, to: Point) -> Vec<char> {
@@ -394,8 +417,14 @@ fn test_all() {
 
         let output = solve(&input);
 
-        let score = evaluate(output);
-        total_score += score;
+        let score = if output.len() > 10000 {
+            0
+        } else {
+            evaluate(output)
+        };
+        if score >= 0 {
+            total_score += score;
+        }
     }
     println!("{}", total_score);
 }
