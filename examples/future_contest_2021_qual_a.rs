@@ -39,30 +39,84 @@ fn solve(input: &str) -> String {
 
     let mut result: Vec<char> = Vec::new();
     let mut current = Point::new(0, 0);
-    for i in 0..100 {
+    let mut i = 0;
+    while i < 100 {
         let card = cards[i];
-        if let Some(p1) = exist(current, card, i + 1, &map) {
-            if let Some(p2) = exist_empty(p1, card, &map) {
-                let mut r1 = move_to(current, p1);
-                result.append(&mut r1);
-                result.push('I');
-                map[p1.x][p1.y] = INF;
-                let mut r2 = move_to(p1, p2);
-                result.append(&mut r2);
-                result.push('O');
-                map[p2.x][p2.y] = i + 1;
-                cards[i + 1] = p2;
-                current = p2;
-            }
+        if i == 99 {
+            let mut r = move_to(current, card);
+            result.append(&mut r);
+            result.push('I');
+            current = card;
+            map[current.x][current.y] = INF;
+            break;
         }
 
-        let mut r = move_to(current, card);
-        result.append(&mut r);
-        result.push('I');
-        current = card;
-        map[current.x][current.y] = INF;
+        // 直接 i -> i + 1 と辿った場合
+        let card1 = cards[i];
+        let card2 = cards[i + 1];
+        let d1 =
+            dist(current, card1)
+                + dist(card1, card2);
+        // i + 1に寄り道した場合
+        let empty = find_empty(card1, &map);
+        let d2 =
+            dist(current, card2)
+                + dist(card2, empty)
+                + dist(empty, card1)
+                + dist(card1, empty);
+        // コストが安い方を採用
+        if d1 <= d2 {
+            let mut r = move_to(current, card1);
+            result.append(&mut r);
+            result.push('I');
+            current = card1;
+            map[current.x][current.y] = INF;
+        } else {
+            let mut r = move_to(current, card2);
+            result.append(&mut r);
+            result.push('I');
+            current = card2;
+            map[current.x][current.y] = INF;
+            let mut r = move_to(current, empty);
+            result.append(&mut r);
+            result.push('O');
+            current = empty;
+            map[current.x][current.y] = i + 1;
+            let mut r = move_to(current, card1);
+            result.append(&mut r);
+            result.push('I');
+            current = card1;
+            map[current.x][current.y] = INF;
+            let mut r = move_to(current, empty);
+            result.append(&mut r);
+            result.push('I');
+            current = empty;
+            map[current.x][current.y] = INF;
+
+            i += 1;
+        }
+
+        i += 1;
     }
     result.iter().collect::<String>()
+}
+
+fn dist(p1: Point, p2: Point) -> usize {
+    (p1.x as isize - p2.x as isize).abs() as usize
+        + (p1.y as isize - p2.y as isize).abs() as usize
+}
+
+fn cost(ope: &Vec<char>) -> usize {
+    let mut cost: usize = 0;
+    for &c in ope {
+        match c {
+            'U' | 'D' | 'L' | 'R' => {
+                cost += 1;
+            },
+            _ => {},
+        }
+    }
+    cost
 }
 
 fn exist(from: Point, to: Point, target: usize, map: &Vec<Vec<usize>>) -> Option<Point> {
@@ -78,6 +132,37 @@ fn exist(from: Point, to: Point, target: usize, map: &Vec<Vec<usize>>) -> Option
         }
     }
     None
+}
+
+/// pointから一番近い空き地を探す
+fn find_empty(point: Point, map: &Vec<Vec<usize>>) -> Point {
+    let dx = vec![-1, 1, 0, 0];
+    let dy = vec![0, 0, -1, 1];
+
+    let mut q: VecDeque<Point> = VecDeque::new();
+    let mut visited: Vec<Vec<bool>> = vec![vec![false; 20]; 20];
+    q.push_back(point);
+    visited[point.x][point.y] = true;
+    while let Some(p) = q.pop_front() {
+        if map[p.x][p.y] == INF {
+            return p;
+        }
+        for i in 0..4 {
+            let nx = p.x as isize + dx[i];
+            let ny = p.y as isize + dy[i];
+            if nx < 0 as isize || nx > 19 as isize || ny < 0 as isize || ny > 19 as isize {
+                continue;
+            }
+            let nx = nx as usize;
+            let ny = ny as usize;
+            if visited[nx][ny] {
+                continue;
+            }
+            q.push_back(Point::new(nx, ny));
+            visited[nx][ny] = true;
+        }
+    }
+    point
 }
 
 fn exist_empty(from: Point, to: Point, map: &Vec<Vec<usize>>) -> Option<Point> {
