@@ -1,4 +1,6 @@
 use std::io::Read;
+use std::cmp::{min, max};
+use std::collections::VecDeque;
 
 fn main() {
     let mut buf = String::new();
@@ -21,10 +23,11 @@ impl Point {
     }
 }
 
+const INF: usize = 999;
+
 fn solve(input: &str) -> String {
     let mut iterator = input.split_whitespace();
 
-    const INF: usize = 999;
     let mut cards: Vec<Point> = Vec::new();
     let mut map: Vec<Vec<usize>> = vec![vec![INF; 20]; 20];
     for i in 0..100 {
@@ -38,12 +41,78 @@ fn solve(input: &str) -> String {
     let mut current = Point::new(0, 0);
     for i in 0..100 {
         let card = cards[i];
+        if let Some(p1) = exist(current, card, i + 1, &map) {
+            if let Some(p2) = exist_empty(p1, card, &map) {
+                let mut r1 = move_to(current, p1);
+                result.append(&mut r1);
+                result.push('I');
+                map[p1.x][p1.y] = INF;
+                let mut r2 = move_to(p1, p2);
+                result.append(&mut r2);
+                result.push('O');
+                map[p2.x][p2.y] = i + 1;
+                cards[i + 1] = p2;
+                current = p2;
+            }
+        }
+
         let mut r = move_to(current, card);
         result.append(&mut r);
         result.push('I');
         current = card;
+        map[current.x][current.y] = INF;
     }
     result.iter().collect::<String>()
+}
+
+fn exist(from: Point, to: Point, target: usize, map: &Vec<Vec<usize>>) -> Option<Point> {
+    let minx = min(from.x, to.x);
+    let maxx = max(from.x, to.x);
+    let miny = min(from.y, to.y);
+    let maxy = max(from.y, to.y);
+    for x in minx..=maxx {
+        for y in miny..=maxy {
+            if map[x][y] == target {
+                return Some(Point::new(x, y));
+            }
+        }
+    }
+    None
+}
+
+fn exist_empty(from: Point, to: Point, map: &Vec<Vec<usize>>) -> Option<Point> {
+    let minx = min(from.x, to.x);
+    let maxx = max(from.x, to.x);
+    let miny = min(from.y, to.y);
+    let maxy = max(from.y, to.y);
+
+    let dx = vec![-1, 1, 0, 0];
+    let dy = vec![0, 0, -1, 1];
+
+    let mut q: VecDeque<Point> = VecDeque::new();
+    let mut visited: Vec<Vec<bool>> = vec![vec![false; 20]; 20];
+    q.push_back(to);
+    visited[to.x][to.y] = true;
+    while let Some(p) = q.pop_front() {
+        if map[p.x][p.y] == INF {
+            return Some(p);
+        }
+        for i in 0..4 {
+            let nx = p.x as isize + dx[i];
+            let ny = p.y as isize + dy[i];
+            if nx < minx as isize || nx > maxx as isize || ny < miny as isize || ny > maxy as isize {
+                continue;
+            }
+            let nx = nx as usize;
+            let ny = ny as usize;
+            if visited[nx][ny] {
+                continue;
+            }
+            q.push_back(Point::new(nx, ny));
+            visited[nx][ny] = true;
+        }
+    }
+    None
 }
 
 fn move_to(from: Point, to: Point) -> Vec<char> {
@@ -68,6 +137,11 @@ fn move_to(from: Point, to: Point) -> Vec<char> {
     }
     return result;
 }
+
+
+
+
+
 
 #[test]
 fn test_all() {
