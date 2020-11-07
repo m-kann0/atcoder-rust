@@ -9,42 +9,80 @@ fn main() {
     println!("{}", answer);
 }
 
+#[derive(Copy, Clone)]
+struct Point {
+    x: usize,
+    y: usize,
+}
+
+impl Point {
+    fn new(x: usize, y: usize) -> Self {
+        Self { x, y }
+    }
+}
+
 fn solve(input: &str) -> String {
     let mut iterator = input.split_whitespace();
 
-    let mut cards: Vec<(usize, usize)> = Vec::new();
-    for _ in 0..100 {
+    const INF: usize = 999;
+    let mut cards: Vec<Point> = Vec::new();
+    let mut map: Vec<Vec<usize>> = vec![vec![INF; 20]; 20];
+    for i in 0..100 {
         let x: usize = iterator.next().unwrap().parse().unwrap();
         let y: usize = iterator.next().unwrap().parse().unwrap();
-        cards.push((x, y));
+        cards.push(Point::new(x, y));
+        map[x][y] = i;
     }
 
     let mut result: Vec<char> = Vec::new();
-    let mut current = (0, 0);
+    let mut current = Point::new(0, 0);
     for i in 0..100 {
         let card = cards[i];
-        if card.0 > current.0 {
-            for _ in 0..(card.0 - current.0) {
-                result.push('D');
-            }
-        } else if card.0 < current.0 {
-            for _ in 0..(current.0 - card.0) {
-                result.push('U');
-            }
-        }
-        if card.1 > current.1 {
-            for _ in 0..(card.1 - current.1) {
-                result.push('R');
-            }
-        } else if card.1 < current.1 {
-            for _ in 0..(current.1 - card.1) {
-                result.push('L');
-            }
-        }
+        let mut r = move_to(current, card);
+        result.append(&mut r);
         result.push('I');
-        current = (card.0, card.1);
+        current = card;
     }
     result.iter().collect::<String>()
+}
+
+fn move_to(from: Point, to: Point) -> Vec<char> {
+    let mut result = Vec::new();
+    if to.x > from.x {
+        for _ in 0..(to.x - from.x) {
+            result.push('D');
+        }
+    } else if to.x < from.x {
+        for _ in 0..(from.x - to.x) {
+            result.push('U');
+        }
+    }
+    if to.y > from.y {
+        for _ in 0..(to.y - from.y) {
+            result.push('R');
+        }
+    } else if to.y < from.y {
+        for _ in 0..(from.y - to.y) {
+            result.push('L');
+        }
+    }
+    return result;
+}
+
+#[test]
+fn test_all() {
+    let dir = "C:\\Users\\KannoMasato\\Desktop\\testCase\\";
+    let mut total_score = 0;
+    for i in 0..50 {
+        let file_path = format!("{}testCase_{}.txt", dir, i);
+        let input = std::fs::read_to_string(file_path).unwrap();
+
+        let output = solve(&input);
+
+        let score = evaluate(output);
+        total_score += score;
+    }
+    println!("{}", total_score);
 }
 
 fn evaluate(output: String) -> isize {
