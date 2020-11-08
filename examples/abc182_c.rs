@@ -1,5 +1,5 @@
 use std::io::Read;
-use std::cmp::{max, min};
+use std::cmp::min;
 
 fn main() {
     let mut buf = String::new();
@@ -17,54 +17,40 @@ fn solve(input: &str) -> String {
 
     let mut sum = 0;
     let mut m: Vec<usize> = vec![0; 3];
+    let mut k: usize = 0;
     while n > 0 {
         let i = n % 10;
         sum += i;
         m[i % 3] += 1;
+        k += 1;
         n /= 10;
     }
 
-    if sum % 3 == 0 {
-        return "0".to_string();
-    }
-
-    if sum % 3 == 1 {
-        if m[1] > 0 {
-            m[1] -= 1;
-            if m[0] == 0 && m[1] == 0 && m[2] == 0 {
-                return "-1".to_string();
-            } else {
-                return "1".to_string();
+    const INF: usize = 10000;
+    let mut ans = INF;
+    for i1 in 0..=2 {
+        for i2 in 0..=2 {
+            if i1 > m[1] {
+                continue;
             }
-        } else {
-            m[2] -= 2;
-            if m[0] == 0 && m[1] == 0 && m[2] == 0 {
-                return "-1".to_string();
-            } else {
-                return "2".to_string();
+            if i2 > m[2] {
+                continue;
             }
-        }
-    }
-
-    if sum % 3 == 2 {
-        if m[2] > 0 {
-            m[2] -= 1;
-            if m[0] == 0 && m[1] == 0 && m[2] == 0 {
-                return "-1".to_string();
-            } else {
-                return "1".to_string();
+            if i1 + i2 >= k {
+                continue;
             }
-        } else {
-            m[1] -= 2;
-            if m[0] == 0 && m[1] == 0 && m[2] == 0 {
-                return "-1".to_string();
-            } else {
-                return "2".to_string();
+            let mut now = sum;
+            now -= i1 * 1;
+            now -= i2 * 2;
+            if now % 3 == 0 {
+                ans = min(ans, i1 + i2);
             }
         }
     }
-
-    return "-1".to_string();
+    if ans == INF {
+        return "-1".to_string();
+    }
+    ans.to_string()
 }
 
 #[test]
