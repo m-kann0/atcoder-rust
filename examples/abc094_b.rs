@@ -17,26 +17,14 @@ fn solve(input: &str) -> String {
     let n: usize = iterator.next().unwrap().parse().unwrap();
     let m: usize = iterator.next().unwrap().parse().unwrap();
     let x: usize = iterator.next().unwrap().parse().unwrap();
-    let mut a = HashSet::new();
-    for _ in 0..m {
-        let ai: usize = iterator.next().unwrap().parse().unwrap();
-        a.insert(ai);
-    }
+    let a: Vec<usize> = (0..m).map(|_| iterator.next().unwrap().parse().unwrap()).collect();
 
     let mut a1 = 0;
-    let mut i = x;
-    while i > 0 {
-        i -= 1;
-        if a.contains(&i) {
-            a1 += 1;
-        }
-    }
-
     let mut a2 = 0;
-    let mut i = x;
-    while i < n {
-        i += 1;
-        if a.contains(&i) {
+    for i in 0..m {
+        if a[i] < x {
+            a1 += 1;
+        } else {
             a2 += 1;
         }
     }
