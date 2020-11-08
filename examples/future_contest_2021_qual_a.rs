@@ -409,7 +409,7 @@ fn move_to(from: Point, to: Point) -> Vec<char> {
 
 #[test]
 fn test_all() {
-    let dir = "C:\\Users\\KannoMasato\\Desktop\\testCase\\";
+    let dir = "/xxx/yyy/zzz";
     let mut total_score = 0;
     for i in 0..50 {
         let file_path = format!("{}testCase_{}.txt", dir, i);
@@ -545,7 +545,9 @@ fn test_sample() {
 3 6
 19 7
 1 16";
-    println!("{}", evaluate(solve(input)));
+    let output = solve(input);
+    println!("{}", output);
+    println!("{}", evaluate(output));
 }
 
 #[test]
