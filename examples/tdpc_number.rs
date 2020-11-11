@@ -16,6 +16,7 @@ fn solve(input: &str) -> String {
     let n: Vec<usize> = iterator.next().unwrap().chars().map(|c| c as usize - '0' as usize).collect();
 
     const MOD: usize = 1_000_000_007;
+    // dp[確定した桁数][N未満が確定しているかどうか][各桁の和 mod D]
     let mut dp: Vec<Vec<Vec<usize>>> = vec![vec![vec![0; d]; 2]; n.len() + 1];
     dp[0][0][0] = 1;
     for i in 0..n.len() {
@@ -29,6 +30,7 @@ fn solve(input: &str) -> String {
             }
         }
     }
+    // 0の分も数えているので-1する
     let ans = (dp[n.len()][0][0] + dp[n.len()][1][0] + MOD - 1) % MOD;
     ans.to_string()
 }
