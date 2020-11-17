@@ -34,22 +34,25 @@ fn solve(input: &str) -> String {
         dp[i][0] = 0;
         dp[i][1] = 1;
         for j in 2..=i {
-            let mut ng: isize = 0;
-            let mut ok: isize = (a[i - 1] * dp[i - 1][j - 1] + 1) as isize;
-            while (ok - ng).abs() > 1 {
-                let mid = (ok + ng) / 2;
-                if a[i - 1] * dp[i - 1][j - 1] < s[i - 1] * mid as usize {
-                    ok = mid;
-                } else {
-                    ng = mid;
-                }
-            }
-            let ok = ok as usize;
-            if ok <= a[i - 1] {
-                dp[i][j] = min(dp[i - 1][j], dp[i - 1][j - 1] + ok);
-            } else {
-                dp[i][j] = dp[i - 1][j];
-            }
+            // let mut ng: isize = 0;
+            // let mut ok: isize = (a[i - 1] * dp[i - 1][j - 1] + 1) as isize;
+            // while (ok - ng).abs() > 1 {
+            //     let mid = (ok + ng) / 2;
+            //     if a[i - 1] * dp[i - 1][j - 1] < s[i - 1] * mid as usize {
+            //         ok = mid;
+            //     } else {
+            //         ng = mid;
+            //     }
+            // }
+            // let ok = ok as usize;
+            // if ok <= a[i - 1] {
+            //     dp[i][j] = min(dp[i - 1][j], dp[i - 1][j - 1] + ok);
+            // } else {
+            //     dp[i][j] = dp[i - 1][j];
+            // }
+            // 二分探索不要だった
+            let x = a[i - 1] * dp[i - 1][j - 1] / s[i - 1] + 1;
+            dp[i][j] = min(dp[i - 1][j], dp[i - 1][j - 1] + x);
         }
     }
     let mut ans = 0;
