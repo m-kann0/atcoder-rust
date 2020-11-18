@@ -22,25 +22,22 @@ fn solve(input: &str) -> String {
     let a: Vec<usize> = (0..n).map(|_| iterator.next().unwrap().parse().unwrap()).collect();
 
     const INF: usize = 1_000_000_000;
-    let mut dp = vec![vec![vec![INF; 2]; m]; 2];
-    dp[0][0][0] = 0;
+    let mut dp = vec![vec![INF; m]; 2];
+    dp[0][0] = 0;
     for i in 0..n {
         let prev = i % 2;
         let now = (i + 1) % 2;
         for j in 0..m {
-            dp[now][j][0] = min(dp[prev][j][0], dp[prev][j][1]);
-        }
-        for j in 0..m {
             let sho = a[i] / m;
             let amari = a[i] % m;
             if j >= amari {
-                dp[now][j][1] = dp[now][j - amari][0] + sho;
+                dp[now][j] = min(dp[prev][j], dp[prev][j - amari] + sho);
             } else {
-                dp[now][j][1] = dp[now][j + m - amari][0] + sho + 1;
+                dp[now][j] = min(dp[prev][j], dp[prev][j + m - amari] + sho + 1);
             }
         }
     }
-    if dp[n % 2][l][0] < x || dp[n % 2][l][1] < x {
+    if dp[n % 2][l] < x {
         "Yes".to_string()
     } else {
         "No".to_string()
