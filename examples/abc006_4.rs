@@ -17,24 +17,36 @@ fn solve(input: &str) -> String {
     let n: usize = iterator.next().unwrap().parse().unwrap();
     let c: Vec<usize> = (0..n).map(|_| iterator.next().unwrap().parse().unwrap()).collect();
 
-    const INF: usize = 1_000_000_000;
-    let mut dp = vec![INF; n];
-    for i in 0..n {
-        let mut ok: isize = n as isize - 1;
-        let mut ng: isize = -1;
-        while (ok - ng).abs() > 1 {
-            let mid = (ok + ng) / 2;
-            if dp[mid as usize] > c[i] {
-                ok = mid;
-            } else {
-                ng = mid;
-            }
-        }
-        dp[ok as usize] = c[i];
-    }
-    let lis = dp.iter().enumerate().filter(|(_i, x)| **x < INF).last().unwrap().0 + 1;
+    let lis = lis::lis(&c, std::usize::MAX);
     let ans = n - lis;
     ans.to_string()
+}
+
+mod lis {
+    pub fn lis<T: PartialOrd + PartialEq + Copy + Clone>(v: &Vec<T>, inf: T) -> usize {
+        let mut dp = vec![inf; v.len()];
+        for &x in v {
+            let mut ok: isize = v.len() as isize - 1;
+            let mut ng: isize = -1;
+            while (ok - ng).abs() > 1 {
+                let mid = (ok + ng) / 2;
+                if x <= dp[mid as usize] {
+                    ok = mid;
+                } else {
+                    ng = mid;
+                }
+            }
+            dp[ok as usize] = x.clone();
+        }
+
+        let mut ans = 0;
+        for i in 0..v.len() {
+            if dp[i] < inf {
+                ans = i + 1;
+            }
+        }
+        ans
+    }
 }
 
 #[test]
