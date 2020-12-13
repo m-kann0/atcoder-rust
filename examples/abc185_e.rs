@@ -20,30 +20,28 @@ fn solve(input: &str) -> String {
     let a: Vec<usize> = (0..n).map(|_| iterator.next().unwrap().parse().unwrap()).collect();
     let b: Vec<usize> = (0..m).map(|_| iterator.next().unwrap().parse().unwrap()).collect();
 
-    let mut dp = vec![vec![0; m + 1]; n + 1];
-    for i in 0..n {
-        for j in 0..m {
-            if a[i] == b[j] {
-                dp[i + 1][j + 1] = dp[i][j] + 1;
-            } else {
-                dp[i + 1][j + 1] = max(dp[i + 1][j], dp[i][j + 1]);
+    const INF: usize = 1_000_000;
+    let mut dp = vec![vec![INF; m + 1]; n + 1];
+    dp[0][0] = 0;
+    for i in 0..=n {
+        for j in 0..=m {
+            if j < m {
+                dp[i][j + 1] = min(dp[i][j + 1], dp[i][j] + 1);
+            }
+            if i < n {
+                dp[i + 1][j] = min(dp[i + 1][j], dp[i][j] + 1);
+            }
+            if i < n && j < m {
+                if a[i] == b[j] {
+                    dp[i + 1][j + 1] = min(dp[i + 1][j + 1], dp[i][j]);
+                } else {
+                    dp[i + 1][j + 1] = min(dp[i + 1][j + 1], dp[i][j] + 1);
+                }
             }
         }
     }
 
-    let l = dp[n][m];
-    // eprintln!("l = {:?}", l);
-    let a_rest = n - l;
-    let b_rest = m - l;
-    let ans = min(a_rest, b_rest)
-        + (a_rest - min(a_rest, b_rest))
-        + (b_rest - min(a_rest, b_rest));
-    ans.to_string()
-}
-
-#[test]
-fn test2() {
-
+    dp[n][m].to_string()
 }
 
 #[test]
