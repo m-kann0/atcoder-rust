@@ -17,10 +17,17 @@ fn solve(input: &str) -> String {
     let n: usize = iterator.next().unwrap().parse().unwrap();
     let mut a: Vec<isize> = (0..n).map(|_| iterator.next().unwrap().parse().unwrap()).collect();
     a.sort();
+    // let mut ans: isize = 0;
+    // for i in 1..=n {
+    //     ans += (i as isize - 1) * a[i - 1];
+    //     ans -= (n as isize - i as isize) * a[i - 1];
+    // }
+    // ans.to_string();
     let mut ans: isize = 0;
-    for i in 1..=n {
-        ans += (i as isize - 1) * a[i - 1];
-        ans -= (n as isize - i as isize) * a[i - 1];
+    let mut s = 0;
+    for j in 1..n {
+        s += a[j - 1];
+        ans += a[j] * j as isize - s;
     }
     ans.to_string()
 }
