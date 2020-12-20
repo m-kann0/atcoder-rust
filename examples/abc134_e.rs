@@ -15,18 +15,15 @@ fn solve(input: &str) -> String {
     let mut iterator = input.split_whitespace();
 
     let n: usize = iterator.next().unwrap().parse().unwrap();
-    let mut a: Vec<usize> = (0..n).map(|_| iterator.next().unwrap().parse().unwrap()).collect();
+    let a: Vec<isize> = (0..n).map(|_| iterator.next().unwrap().parse().unwrap()).collect();
 
-    a.reverse();
-
-    const INF: usize = 1_000_000_005;
-    let mut b = vec![INF; n];
+    let mut b = vec![-1; n];
     for i in 0..n {
-        let mut ok: isize = n as isize - 1;
-        let mut ng: isize = -1;
+        let mut ok = n as isize - 1;
+        let mut ng = -1 as isize;
         while (ok - ng).abs() > 1 {
             let mid = (ok + ng) / 2;
-            if a[i] < b[mid as usize] {
+            if b[mid as usize] < a[i] {
                 ok = mid;
             } else {
                 ng = mid;
@@ -35,7 +32,7 @@ fn solve(input: &str) -> String {
         b[ok as usize] = a[i];
     }
 
-    let ans: usize = b.iter().filter(|bi| **bi < INF).count();
+    let ans: usize = b.iter().filter(|bi| **bi >= 0).count();
     ans.to_string()
 }
 
