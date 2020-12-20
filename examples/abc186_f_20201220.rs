@@ -18,37 +18,45 @@ fn solve(input: &str) -> String {
     let h: usize = iterator.next().unwrap().parse().unwrap();
     let w: usize = iterator.next().unwrap().parse().unwrap();
     let m: usize = iterator.next().unwrap().parse().unwrap();
-    let mut a = vec![h; w];
-    let mut b = vec![w; h];
+    let mut blocks = Vec::new();
     for _ in 0..m {
         let x: usize = iterator.next().unwrap().parse().unwrap();
         let y: usize = iterator.next().unwrap().parse().unwrap();
-        let x = x - 1;
-        let y = y - 1;
+        blocks.push((x - 1, y - 1));
+    }
+
+    let mut a = vec![h; w];
+    let mut b = vec![w; h];
+    for &(x, y) in blocks.iter() {
         a[y] = min(a[y], x);
         b[x] = min(b[x], y);
     }
+
     let mut ans: usize = 0;
     for y in 0..b[0] {
         ans += a[y];
     }
     for x in 0..a[0] {
-        ans += b[x];
+        ans += b[x]
     }
-    let mut t = FenwickTree::new(w, 0_isize);
-    for y in 0..b[0] {
-        t.add(y, 1);
-    }
+
     let mut ends = vec![vec![]; h + 1];
     for y in 0..b[0] {
         ends[a[y]].push(y);
     }
+
+    let mut bit = FenwickTree::new(w, 0_isize);
+    for y in 0..b[0] {
+        bit.add(y, 1);
+    }
+
     for x in 0..a[0] {
         for &y in ends[x].iter() {
-            t.add(y, -1);
+            bit.add(y, -1);
         }
-        ans -= t.sum(0, b[x]) as usize;
+        ans -= bit.sum(0, b[x]) as usize;
     }
+
     ans.to_string()
 }
 
