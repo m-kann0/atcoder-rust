@@ -1,6 +1,7 @@
 #![allow(non_snake_case)]
 
 use std::io::Read;
+use std::collections::VecDeque;
 
 fn main() {
     let mut buf = String::new();
@@ -17,23 +18,29 @@ fn solve(input: &str) -> String {
     let n: usize = iterator.next().unwrap().parse().unwrap();
     let a: Vec<isize> = (0..n).map(|_| iterator.next().unwrap().parse().unwrap()).collect();
 
-    let mut b = vec![-1; n];
+    let mut d = VecDeque::new();
     for i in 0..n {
-        let mut ok = n as isize - 1;
-        let mut ng = -1 as isize;
+        if d.is_empty() {
+            d.push_front(a[i]);
+            continue;
+        }
+        let mut ok = -1 as isize;
+        let mut ng = d.len() as isize;
         while (ok - ng).abs() > 1 {
             let mid = (ok + ng) / 2;
-            if b[mid as usize] < a[i] {
+            if d[mid as usize] < a[i] {
                 ok = mid;
             } else {
                 ng = mid;
             }
         }
-        b[ok as usize] = a[i];
+        if ok == -1 {
+            d.push_front(a[i]);
+        } else {
+            d[ok as usize] = a[i];
+        }
     }
-
-    let ans: usize = b.iter().filter(|bi| **bi >= 0).count();
-    ans.to_string()
+    d.len().to_string()
 }
 
 #[test]
