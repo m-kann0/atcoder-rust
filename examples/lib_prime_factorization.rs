@@ -1,13 +1,11 @@
-use std::collections::HashMap;
-
 fn main() {
     let result = prime_factorization(140);
     println!("{:?}", result);
 }
 
 /// 素因数分解
-fn prime_factorization(mut n: usize) -> HashMap<usize, usize> {
-    let mut result: HashMap<_, _> = HashMap::new();
+fn prime_factorization(mut n: usize) -> std::collections::HashMap<usize, usize> {
+    let mut result: std::collections::HashMap<_, _> = std::collections::HashMap::new();
 
     for d in 2.. {
         if d * d > n {
