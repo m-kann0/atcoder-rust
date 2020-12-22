@@ -17,15 +17,18 @@ fn solve(input: &str) -> String {
     let n: usize = iterator.next().unwrap().parse().unwrap();
     let m: usize = iterator.next().unwrap().parse().unwrap();
     let q: usize = iterator.next().unwrap().parse().unwrap();
-    let mut lens = vec![vec![]; n + 1];
+
+    let mut sum = vec![vec![0_usize; n + 1]; n + 1];
     for _ in 0..m {
         let l: usize = iterator.next().unwrap().parse().unwrap();
         let r: usize = iterator.next().unwrap().parse().unwrap();
-        lens[l].push(r - l);
+        sum[l][r] += 1;
     }
 
-    for i in 0..=n {
-        lens[i].sort();
+    for l in 0..=n {
+        for r in 1..=n {
+            sum[l][r] += sum[l][r - 1];
+        }
     }
 
     let mut result = String::new();
@@ -35,20 +38,7 @@ fn solve(input: &str) -> String {
 
         let mut now: usize = 0;
         for i in p..=q {
-            let len = q - i;
-            let mut ok = -1 as isize;
-            let mut ng = lens[i].len() as isize;
-            while (ok - ng).abs() > 1 {
-                let mid = (ok + ng) / 2;
-                if lens[i][mid as usize] <= len {
-                    ok = mid;
-                } else {
-                    ng = mid;
-                }
-            }
-            if ok != -1 {
-                now += ok as usize + 1;
-            }
+            now += sum[i][q];
         }
         result.push_str(&format!("{}\n", now));
     }
