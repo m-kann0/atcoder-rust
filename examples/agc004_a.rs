@@ -1,7 +1,7 @@
 #![allow(non_snake_case)]
 
 use std::io::Read;
-use std::cmp::max;
+use std::cmp::min;
 
 fn main() {
     let mut buf = String::new();
@@ -23,19 +23,7 @@ fn solve(input: &str) -> String {
         return "0".to_string();
     }
 
-    if a == max(a, max(b, c)) {
-        return (b * c).to_string();
-    }
-
-    if b == max(a, max(b, c)) {
-        return (a * c).to_string();
-    }
-
-    if c == max(a, max(b, c)) {
-        return (a * b).to_string();
-    }
-
-    unreachable!();
+    min(a * b, min(b * c, c * a)).to_string()
 }
 
 #[test]
