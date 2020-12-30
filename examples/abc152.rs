@@ -32,23 +32,16 @@ fn solve(input: &str) -> String {
         factors.push(f);
     }
 
-    // eprintln!("factors = {:?}", factors);
+    let mut lcm = ModInt1000000007::new(1);
+    for (&k, &v) in merged_factors.iter() {
+        for _ in 0..v {
+            lcm *= ModInt1000000007::new(k);
+        }
+    }
 
     let mut result = ModInt1000000007::new(0);
     for i in 0..n {
-        let f = &factors[i];
-        // eprintln!("f = {:?}", f);
-        let mut now = ModInt1000000007::new(1);
-        for (&k, &v) in merged_factors.iter() {
-            if f.contains_key(&k) {
-                let mul = v - *f.get(&k).unwrap();
-                now *= ModInt1000000007::new(k).pow(mul as u64);
-            } else {
-                now *= ModInt1000000007::new(k).pow(v as u64);
-            }
-        }
-        // eprintln!("now[i] = {:?}", now);
-        result += now;
+        result += lcm / ModInt1000000007::new(a[i]);
     }
     result.to_string()
 }
